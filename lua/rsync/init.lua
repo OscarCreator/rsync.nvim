@@ -28,10 +28,11 @@ local get_config = function ()
     end
 end
 
-local sync_project = function (local_path, remote_path)
+-- TODO move to separate file
+local sync_project = function (source_path, destination_path)
     -- todo execute rsync command
     vim.b.rsync_status = nil
-    local command = 'rsync -varze --filter=\':- .gitignore\' ' .. local_path .. ' ' .. remote_path
+    local command = 'rsync -varze -f\':- .gitignore\' -f\'- .nvim\' ' .. source_path .. ' ' .. destination_path
     local res = vim.fn.jobstart(command, {
         on_stderr = function (id, output, _)
             -- skip when function reports no error
@@ -79,6 +80,17 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
     end,
     group = rsync_nvim,
 })
+
+
+-- sync all files from remote
+vim.api.nvim_create_user_command("RsyncDown", function ()
+    local config = get_config()
+    if config ~= nil then
+        sync_project(config['remote_path'], config['project_path'])
+    else
+        vim.api.nvim_err_writeln("Could not find rsync.toml")
+    end
+end, {})
 
 
 -- Return status of syncing

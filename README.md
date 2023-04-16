@@ -19,3 +19,11 @@ use {'OscarCreator/rsync.nvim',
     }
 }
 ```
+
+## Commands
+
+Name      | Action
+----------|-------
+RsyncDown | Sync all files from remote to local folder (1)
+
+(1): Files which are excluded are, everything in .gitignore and .nvim folder.
