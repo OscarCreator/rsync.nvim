@@ -1,6 +1,5 @@
 local toml = require("toml")
-
--- TODO save 
+local path = require("plenary.path")
 
 local M = {}
 
@@ -13,10 +12,16 @@ local rsync_nvim = vim.api.nvim_create_augroup(
 )
 
 local get_config = function ()
-    local config_file_path = vim.fn.findfile(".nvim/rsync.toml", ".;")
+    local file_path = ".nvim/rsync.toml"
+    local config_file_path = vim.fn.findfile(file_path, ".;")
     if vim.fn.len(config_file_path) > 0 then
+        -- convert to absolute
+        config_file_path = path:new(config_file_path):absolute()
         local succeeded, table = pcall(toml.decodeFromFile, config_file_path)
         if succeeded then
+            local project_path = string.sub(config_file_path, 1, -string.len(file_path))
+            table['project_path'] = project_path
+
             return table
         else
             print("Error decoding file")
@@ -33,7 +38,7 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
             if config ~= nil then
                 vim.api.nvim_create_autocmd({"BufWritePost"}, {
                     callback = function()
-                        M.sync_project('.', config['remote_path'])
+                        M.sync_project(config['project_path'], config['remote_path'])
                     end,
                     group = rsync_nvim,
                     buffer = vim.api.nvim_get_current_buf()
