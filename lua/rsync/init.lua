@@ -12,13 +12,12 @@ local rsync_nvim = vim.api.nvim_create_augroup(
     { clear = true }
 )
 
-local get_config_file = function ()
+local get_config = function ()
     local config_file_path = vim.fn.findfile(".nvim/rsync.toml", ".;")
     if vim.fn.len(config_file_path) > 0 then
         local succeeded, table = pcall(toml.decodeFromFile, config_file_path)
         if succeeded then
-            print(vim.inspect(table))
-            return config_file_path
+            return table
         else
             print("Error decoding file")
         end
@@ -30,10 +29,11 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
     callback = function()
         -- only initialize once per buffer
         if vim.b.rsync_init == nil then
-            if get_config_file() ~= nil then
+            local config = get_config()
+            if config ~= nil then
                 vim.api.nvim_create_autocmd({"BufWritePost"}, {
                     callback = function()
-                        M.sync_project()
+                        M.sync_project('.', config['remote_path'])
                     end,
                     group = rsync_nvim,
                     buffer = vim.api.nvim_get_current_buf()
@@ -49,7 +49,7 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
 M.sync_project = function (local_path, remote_path)
     -- todo execute rsync command
     vim.b.rsync_status = nil
-    local res = vim.fn.jobstart('rsync -varze --filter=\':- .gitignore\' . ../copy/', {
+    local res = vim.fn.jobstart('rsync -varze --filter=\':- .gitignore\' ' .. local_path .. ' ' .. remote_path, {
         on_stdout = function (id, output, _)
             -- TODO save output
             --print("output" .. vim.inspect(output))
@@ -58,7 +58,7 @@ M.sync_project = function (local_path, remote_path)
             -- skip when function reports no error
             if vim.inspect(output) ~= vim.inspect({ "" }) then
                 -- TODO print output
-                -- print("error:" .. vim.inspect(output))
+                --print("error:" .. vim.inspect(output))
                 --vim.b.rsync_status = 1
             end
         end,
