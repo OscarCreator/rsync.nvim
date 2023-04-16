@@ -21,14 +21,43 @@ local get_config = function ()
         if succeeded then
             local project_path = string.sub(config_file_path, 1, -string.len(file_path))
             table['project_path'] = project_path
-
             return table
         else
-            print("Error decoding file")
+            error("Could not decode rsync.toml")
         end
     end
 end
 
+local sync_project = function (local_path, remote_path)
+    -- todo execute rsync command
+    vim.b.rsync_status = nil
+    local command = 'rsync -varze --filter=\':- .gitignore\' ' .. local_path .. ' ' .. remote_path
+    local res = vim.fn.jobstart(command, {
+        on_stderr = function (id, output, _)
+            -- skip when function reports no error
+            if vim.inspect(output) ~= vim.inspect({ "" }) then
+                -- TODO print save output to temporary log file
+                vim.api.nvim_err_writeln("Error executing: " .. command)
+            end
+        end,
+
+        -- job done executing
+        on_exit = function (j, code, _)
+            vim.b.rsync_status = code
+            if code ~= 0 then
+                vim.api.nvim_err_writeln("rsync execute with result code: " .. code)
+            end
+        end,
+        stdout_buffered = true,
+        stderr_buffered = true
+    })
+
+    if res == -1 then
+        error("Could not execute rsync. Make sure that rsync in on your path")
+    elseif res == 0 then
+        print("Invalid command: " .. command)
+    end
+end
 
 vim.api.nvim_create_autocmd({"BufEnter"}, {
     callback = function()
@@ -38,7 +67,7 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
             if config ~= nil then
                 vim.api.nvim_create_autocmd({"BufWritePost"}, {
                     callback = function()
-                        M.sync_project(config['project_path'], config['remote_path'])
+                        sync_project(config['project_path'], config['remote_path'])
                     end,
                     group = rsync_nvim,
                     buffer = vim.api.nvim_get_current_buf()
@@ -51,43 +80,16 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
     group = rsync_nvim,
 })
 
-M.sync_project = function (local_path, remote_path)
-    -- todo execute rsync command
-    vim.b.rsync_status = nil
-    local res = vim.fn.jobstart('rsync -varze --filter=\':- .gitignore\' ' .. local_path .. ' ' .. remote_path, {
-        on_stdout = function (id, output, _)
-            -- TODO save output
-            --print("output" .. vim.inspect(output))
-        end,
-        on_stderr = function (id, output, _)
-            -- skip when function reports no error
-            if vim.inspect(output) ~= vim.inspect({ "" }) then
-                -- TODO print output
-                --print("error:" .. vim.inspect(output))
-                --vim.b.rsync_status = 1
-            end
-        end,
 
-        -- job done executing
-        on_exit = function (j, code, _)
-            vim.b.rsync_status = code
-            print("exit:" .. vim.inspect(code))
-        end,
-        stdout_buffered = true,
-        stderr_buffered = true
-    })
-
-    if res == -1 then
-        print("command not executable")
-    elseif res == 0 then
-        print("invalid arguments")
-    else
-        print("success")
-    end
-end
-
+-- Return status of syncing
 M.status = function()
-
+    if vim.b.rsync_status == nil then
+        return "Syncing files"
+    elseif vim.b.rsync_status ~= 0 then
+        return "Failed to sync"
+    else
+        return "Up to date"
+    end
 end
 
 M.setup = function(user_config)
