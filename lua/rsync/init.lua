@@ -1,5 +1,7 @@
 local toml = require("toml")
 
+-- TODO save 
+
 local M = {}
 
 -- TODO make sure you only do syncing on at a time. Is there is a sync, wait for it to finish
@@ -44,7 +46,7 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
     group = rsync_nvim,
 })
 
-M.sync_project = function ()
+M.sync_project = function (local_path, remote_path)
     -- todo execute rsync command
     vim.b.rsync_status = nil
     local res = vim.fn.jobstart('rsync -varze --filter=\':- .gitignore\' . ../copy/', {
@@ -77,6 +79,14 @@ M.sync_project = function ()
     else
         print("success")
     end
+end
+
+M.status = function()
+
+end
+
+M.setup = function(user_config)
+    require('rsync.config').set_defaults(user_config)
 end
 
 return M
