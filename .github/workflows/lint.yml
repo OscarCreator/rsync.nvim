@@ -1,0 +1,28 @@
+name: Linting and style checking
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  luacheck:
+    name: luacheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: lunarmodules/luacheck@v1
+        with: 
+          args: lua/rsync
+
+  stylua:
+    name: stylua
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: JohnnyMorganz/stylua-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --color always --check lua/
+
