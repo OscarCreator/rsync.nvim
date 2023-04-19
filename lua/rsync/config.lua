@@ -1,4 +1,3 @@
-
 local config = {}
 config.values = {}
 
@@ -11,4 +10,4 @@ function config.set_defaults(user_defaults)
     end
 end
 
-return
+return config
