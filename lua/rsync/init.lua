@@ -1,31 +1,9 @@
-local toml = require("toml")
-local path = require("plenary.path")
-
 local M = {}
-
--- TODO make sure you only do syncing on at a time. Is there is a sync, wait for it to finish
--- before trying triggering sync again.
 
 local rsync_nvim = vim.api.nvim_create_augroup("rsync_nvim", { clear = true })
 
-local get_config = function()
-    local file_path = ".nvim/rsync.toml"
-    local config_file_path = vim.fn.findfile(file_path, ".;")
-    if vim.fn.len(config_file_path) > 0 then
-        -- convert to absolute
-        config_file_path = path:new(config_file_path):absolute()
-        local succeeded, table = pcall(toml.decodeFromFile, config_file_path)
-        if succeeded then
-            local project_path = string.sub(config_file_path, 1, -string.len(file_path))
-            table["project_path"] = project_path
-            return table
-        else
-            error("Could not decode rsync.toml")
-        end
-    end
-end
+local config = require("rsync.config")
 
--- TODO move to separate file
 local sync_project = function(source_path, destination_path)
     -- todo execute rsync command
     vim.b.rsync_status = nil
@@ -61,11 +39,11 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
     callback = function()
         -- only initialize once per buffer
         if vim.b.rsync_init == nil then
-            local config = get_config()
-            if config ~= nil then
+            local config_table = config.get_project()
+            if config_table ~= nil then
                 vim.api.nvim_create_autocmd({ "BufWritePost" }, {
                     callback = function()
-                        sync_project(config["project_path"], config["remote_path"])
+                        sync_project(config_table["project_path"], config_table["remote_path"])
                     end,
                     group = rsync_nvim,
                     buffer = vim.api.nvim_get_current_buf(),
@@ -80,9 +58,19 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 
 -- sync all files from remote
 vim.api.nvim_create_user_command("RsyncDown", function()
-    local config = get_config()
-    if config ~= nil then
-        sync_project(config["remote_path"], config["project_path"])
+    local config_table = config.get_project()
+    if config_table ~= nil then
+        sync_project(config_table["remote_path"], config_table["project_path"])
+    else
+        vim.api.nvim_err_writeln("Could not find rsync.toml")
+    end
+end, {})
+
+-- sync all files to remote
+vim.api.nvim_create_user_command("RsyncUp", function()
+    local config_table = config.get_project()
+    if config_table ~= nil then
+        sync_project(config_table["project_path"], config_table["remote_path"])
     else
         vim.api.nvim_err_writeln("Could not find rsync.toml")
     end
