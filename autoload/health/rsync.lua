@@ -1,0 +1,1 @@
+require("rsync.health").check()
