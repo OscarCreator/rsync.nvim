@@ -4,10 +4,9 @@ local rsync_nvim = vim.api.nvim_create_augroup("rsync_nvim", { clear = true })
 
 local config = require("rsync.config")
 
-local sync_project = function(source_path, destination_path)
-    -- todo execute rsync command
+local sync = function (command)
     vim.b.rsync_status = nil
-    local command = "rsync -varze -f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
+
     local res = vim.fn.jobstart(command, {
         on_stderr = function(_, output, _)
             -- skip when function reports no error
@@ -35,6 +34,21 @@ local sync_project = function(source_path, destination_path)
     end
 end
 
+local sync_project = function(source_path, destination_path)
+    local command = "rsync -varz -f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
+    sync(command)
+end
+
+local sync_remote = function (source_path, destination_path, include_extra)
+    local remote_includes = ""
+    if include_extra ~= nil then
+        remote_includes = "-f'+ " .. include_extra .. "' "
+    end
+    local command = "rsync -varz " .. remote_includes ..
+        "-f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
+    sync(command)
+end
+
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
     callback = function()
         -- only initialize once per buffer
@@ -60,7 +74,7 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 vim.api.nvim_create_user_command("RsyncDown", function()
     local config_table = config.get_project()
     if config_table ~= nil then
-        sync_project(config_table["remote_path"], config_table["project_path"])
+        sync_remote(config_table["remote_path"], config_table["project_path"], config_table["remote_includes"])
     else
         vim.api.nvim_err_writeln("Could not find rsync.toml")
     end
