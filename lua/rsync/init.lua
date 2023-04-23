@@ -4,7 +4,7 @@ local rsync_nvim = vim.api.nvim_create_augroup("rsync_nvim", { clear = true })
 
 local config = require("rsync.config")
 
-local sync = function (command)
+local sync = function(command)
     vim.b.rsync_status = nil
 
     local res = vim.fn.jobstart(command, {
@@ -39,13 +39,17 @@ local sync_project = function(source_path, destination_path)
     sync(command)
 end
 
-local sync_remote = function (source_path, destination_path, include_extra)
+local sync_remote = function(source_path, destination_path, include_extra)
     local remote_includes = ""
     if include_extra ~= nil then
         remote_includes = "-f'+ " .. include_extra .. "' "
     end
-    local command = "rsync -varz " .. remote_includes ..
-        "-f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
+    local command = "rsync -varz "
+        .. remote_includes
+        .. "-f':- .gitignore' -f'- .nvim' "
+        .. source_path
+        .. " "
+        .. destination_path
     sync(command)
 end
 
