@@ -40,12 +40,17 @@ local sync_project = function(source_path, destination_path)
 end
 
 local sync_remote = function(source_path, destination_path, include_extra)
-    local remote_includes = ""
-    if include_extra ~= nil then
-        remote_includes = "-f'+ " .. include_extra .. "' "
+    local filters = ""
+    if type(include_extra) == "table" then
+        local filter_template = "-f'+ %s' "
+        for _, value in pairs(include_extra) do
+            filters = filters .. filter_template:format(value)
+        end
+    elseif type(include_extra) == "string" then
+        filters = "-f'+ " .. include_extra .. "' "
     end
     local command = "rsync -varz "
-        .. remote_includes
+        .. filters
         .. "-f':- .gitignore' -f'- .nvim' "
         .. source_path
         .. " "
