@@ -11,22 +11,22 @@ local function check_rsync()
     end
 end
 
-local function check_toml()
-    local found = vim.fn.executable("luarocks")
+local function check_cargo()
+    local found = vim.fn.executable("cargo")
     if found == 1 then
-        local version = vim.fn.system("luarocks show toml --mversion")
-        vim.health.report_ok(("`toml.lua` found v%s"):format(version))
+        local version = vim.fn.system("cargo -V")
+        vim.health.report_ok(("`cargo` found %s"):format(version))
     else
         vim.health.report_error(
-            ("`toml` is not installed"):format(),
-            { ("Run in shell: `luarocks install toml`"):format() }
+            ("`cargo` is not installed"):format(),
+            { ("Install cargo"):format() }
         )
     end
 end
 
 M.check = function()
     check_rsync()
-    check_toml()
+    check_cargo()
 end
 
 return M

@@ -4,16 +4,12 @@ Asynchronously transfer your files with `rsync` on save.
 
 ## Dependencies
 
-- toml.lua
-
-    ```
-    luarocks install toml
-    ```
+- cargo
 
 ## Installation
 
 ```lua
-use {'OscarCreator/rsync.nvim',
+use {'OscarCreator/rsync.nvim', run = 'make'
     requires = {
         {'nvim-lua/plenary.nvim'}
     }
