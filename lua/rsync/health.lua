@@ -17,10 +17,7 @@ local function check_cargo()
         local version = vim.fn.system("cargo -V")
         vim.health.report_ok(("`cargo` found %s"):format(version))
     else
-        vim.health.report_error(
-            ("`cargo` is not installed"):format(),
-            { ("Install cargo"):format() }
-        )
+        vim.health.report_error(("`cargo` is not installed"):format(), { ("Install cargo"):format() })
     end
 end
 
