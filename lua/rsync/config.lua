@@ -1,10 +1,9 @@
-local toml = require("toml")
+local rsync_nvim = require("rsync_nvim")
 local path = require("plenary.path")
 
 local config = {}
 config.values = {}
 
--- https://github.com/nvim-telescope/telescope.nvim/blob/master/lua/telescope/config.lua
 function config.set_defaults(user_defaults)
     user_defaults = vim.F.if_nil(user_defaults, {})
 
@@ -19,7 +18,7 @@ function config.get_project()
     if vim.fn.len(config_file_path) > 0 then
         -- convert to absolute
         config_file_path = path:new(config_file_path):absolute()
-        local succeeded, table = pcall(toml.decodeFromFile, config_file_path)
+        local succeeded, table = pcall(rsync_nvim.decode_toml, config_file_path)
         if succeeded then
             local project_path = string.sub(config_file_path, 1, -string.len(file_path))
             table["project_path"] = project_path
