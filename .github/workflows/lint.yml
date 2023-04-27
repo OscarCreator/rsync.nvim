@@ -3,7 +3,7 @@ name: Linting and style checking
 on:
   push:
     branches: [master]
-  pull_requst:
+  pull_request:
 
 jobs:
   luacheck:
