@@ -64,6 +64,12 @@ project.get_config_table = function()
     table = get_config(config_file_path)
     if table ~= nil then
         table["project_path"] = project_path
+        table["sync_status"] = {
+            code = 0,
+            state = "",
+            progress = "exit",
+            job_id = -1,
+        }
         _RsyncProjectConfigs[project_path] = table
         return table
     end
