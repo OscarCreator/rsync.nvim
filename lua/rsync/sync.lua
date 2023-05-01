@@ -37,7 +37,7 @@ end
 
 local sync_project = function(source_path, destination_path, project_path)
     local command = "rsync -varz -f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
-    run_sync(command, project_path, function (res)
+    run_sync(command, project_path, function(res)
         _RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_up", job_id = res }
     end)
 end
@@ -58,7 +58,7 @@ local sync_remote = function(source_path, destination_path, include_extra, proje
         .. source_path
         .. " "
         .. destination_path
-    run_sync(command, project_path, function (res)
+    run_sync(command, project_path, function(res)
         _RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_down", job_id = res }
     end)
 end
