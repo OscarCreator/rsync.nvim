@@ -3,6 +3,7 @@ local M = {}
 local rsync_nvim = vim.api.nvim_create_augroup("rsync_nvim", { clear = true })
 
 local config = require("rsync.config")
+local project = require("rsync.project")
 
 local sync = function(command)
     vim.b.rsync_status = nil
@@ -62,18 +63,19 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
     callback = function()
         -- only initialize once per buffer
         if vim.b.rsync_init == nil then
-            local config_table = config.get_project()
-            if config_table ~= nil then
-                vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-                    callback = function()
-                        sync_project(config_table["project_path"], config_table["remote_path"])
-                    end,
-                    group = rsync_nvim,
-                    buffer = vim.api.nvim_get_current_buf(),
-                })
-                -- try to initialize if no config file was present at start
-                vim.b.rsync_init = 1
+            -- get config as table if present
+            local config_table = project.get_config_table()
+            if config_table == nil then
+                return
             end
+            vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+                callback = function()
+                    sync_project(config_table["project_path"], config_table["remote_path"])
+                end,
+                group = rsync_nvim,
+                buffer = vim.api.nvim_get_current_buf(),
+            })
+            vim.b.rsync_init = 1
         end
     end,
     group = rsync_nvim,
