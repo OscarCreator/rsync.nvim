@@ -12,6 +12,10 @@ jobs:
     steps: 
       - name: checkout
         uses: actions/checkout@v3
+      - name: install plenary.nvim
+        run: |
+          sudo apt-get install -y luarocks
+          sudo luarocks install plenary.nvim
       - name: install neovim
         uses: rhysd/action-setup-vim@v1
         with:
@@ -19,4 +23,3 @@ jobs:
           version: nightly
       - name: run test
         run: make test
-
