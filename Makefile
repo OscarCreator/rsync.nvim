@@ -1,4 +1,10 @@
 export RSYNC_ROOT=$(PWD)
+
+TEST_DIR := $(RSYNC_ROOT)/tests/rsync/
+MINIMAL_PATH := $(RSYNC_ROOT)/scripts/minimal.vim
+MINIMAL_INIT_PATH := $(RSYNC_ROOT)/tests/minimal_init.lua
+
+
 .PHONY: build
 build:
 	cargo build --release
@@ -25,4 +31,4 @@ cargocheck:
 
 .PHONY: test
 test:
-	nvim --headless -v --noplugin -u scripts/minimal.vim -c "PlenaryBustedDirectory tests/rsync/ {minimal_init = 'tests/minimal_init.lua'}"
+	nvim --headless --noplugin -u $(MINIMAL_PATH) -c "PlenaryBustedDirectory $(TEST_DIR) {minimal_init = '$(MINIMAL_INIT_PATH)'}"
