@@ -25,5 +25,4 @@ cargocheck:
 
 .PHONY: test
 test:
-
-	@nvim --headless --noplugin -u scripts/minimal.vim -c "PlenaryBustedDirectory tests/rsync/ {minimal_init = 'tests/minimal_init.lua'}"
+	nvim --headless -v --noplugin -u scripts/minimal.vim -c "PlenaryBustedDirectory tests/rsync/ {minimal_init = 'tests/minimal_init.lua'}"
