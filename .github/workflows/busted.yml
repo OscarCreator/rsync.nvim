@@ -9,7 +9,9 @@ jobs:
   busted:
     name: busted
     runs-on: ubuntu-latest
-    steps:
+    steps: 
+      - name: checkout
+        uses: actions/checkout@v3
       - name: install neovim
         uses: rhysd/action-setup-vim@v1
         with:
