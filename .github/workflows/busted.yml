@@ -1,0 +1,20 @@
+name: Testing
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  busted:
+    name: busted
+    runs-on: ubuntu-latest
+    steps:
+      - name: install neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+      - name: run test
+        run: make test
+
