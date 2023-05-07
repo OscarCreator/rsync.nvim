@@ -30,9 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+      - uses: dtolnay/rust-toolchain@stable
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
@@ -42,9 +40,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - name: install cargo
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+          components: clippy
+      - name: restore cache
+        uses: Swatinem/rust-cache@v2
+      - name: run clippy
+        run: cargo clippy
