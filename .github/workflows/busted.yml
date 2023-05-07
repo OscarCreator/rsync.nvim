@@ -13,9 +13,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: install cargo
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: dtolnay/rust-toolchain@stable
       - name: build rsync
         run: |
           make build
