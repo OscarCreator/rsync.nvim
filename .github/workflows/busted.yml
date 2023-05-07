@@ -17,6 +17,7 @@ jobs:
       - name: build rsync
         run: |
           make build
+      - uses: Swatinem/rust-cache@v2
       - name: install plenary.nvim
         uses: actions/checkout@v3
         with:
