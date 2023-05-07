@@ -14,10 +14,11 @@ jobs:
         uses: actions/checkout@v3
       - name: install cargo
         uses: dtolnay/rust-toolchain@stable
+      - name: restore cache
+        uses: Swatinem/rust-cache@v2
       - name: build rsync
         run: |
           make build
-      - uses: Swatinem/rust-cache@v2
       - name: install plenary.nvim
         uses: actions/checkout@v3
         with:
