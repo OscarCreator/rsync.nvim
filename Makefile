@@ -8,10 +8,10 @@ MINIMAL_INIT_PATH := $(RSYNC_ROOT)/tests/minimal_init.lua
 .PHONY: build
 build:
 	cargo build --release
-	@rm -rf ./lua/librsync_nvim.so ./lua/deps/
-	cp ./target/release/librsync_nvim.so ./lua/rsync_nvim.so
-	@mkdir -p ./lua/deps/
-	cp ./target/release/deps/*.rlib ./lua/deps/
+	@rm -rf $(PWD)/lua/librsync_nvim.so $(PWD)/lua/deps/
+	cp $(PWD)/target/release/librsync_nvim.so $(PWD)/lua/rsync_nvim.so
+	@mkdir -p $(PWD)/lua/deps/
+	cp $(PWD)/target/release/deps/*.rlib $(PWD)/lua/deps/
 
 .PHONY: lint
 lint: stylua luacheck cargocheck

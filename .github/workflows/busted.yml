@@ -12,11 +12,18 @@ jobs:
     steps: 
       - name: checkout
         uses: actions/checkout@v3
+      - name: install cargo
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: build rsync
+        run: |
+          make build
       - name: install plenary.nvim
         uses: actions/checkout@v3
         with:
           repository: nvim-lua/plenary.nvim
-          path: ~/.local/share/nvim/site/pack/packer/start/
+          path: ~/.local/share/nvim/site/pack/packer/start/plenary.nvim
       - name: install neovim
         uses: rhysd/action-setup-vim@v1
         with:
