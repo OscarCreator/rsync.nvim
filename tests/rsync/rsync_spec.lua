@@ -87,7 +87,7 @@ describe("rsync", function()
                 'remote_includes = ["remote_file.h"]',
             })
             -- add files to remote (not part of .gitignore))
-            helpers.write_file("to_be_deleted.md", {"does not matter", "really."})
+            helpers.write_file("to_be_deleted.md", { "does not matter", "really." })
             helpers.write_remote_file("remote_file.h", { "this file should be able to sync down" })
             helpers.assert_on_remote_only("remote_file.h")
             helpers.write_remote_file("remote_file_2.t", { "some nonsense" })
@@ -117,7 +117,7 @@ describe("rsync", function()
 
             --
             helpers.assert_file_delete("to_be_deleted.md")
-            helpers.assert_files({"remote_file.h", "test.c"})
+            helpers.assert_files({ "remote_file.h", "test.c" })
             helpers.assert_on_remote_only("remote_file_2.t")
         end)
     end)

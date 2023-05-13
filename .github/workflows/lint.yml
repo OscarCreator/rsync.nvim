@@ -24,7 +24,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --color always --check lua/
+          args: --color always --check lua/ tests/
   cargo-fmt:
     name: cargo format
     runs-on: ubuntu-latest
