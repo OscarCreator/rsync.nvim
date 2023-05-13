@@ -22,7 +22,7 @@ luacheck:
 
 .PHONY: stylua
 stylua:
-	stylua --color always --check lua/
+	stylua --color always --check lua/ tests/
 
 .PHONY: cargocheck
 cargocheck:
