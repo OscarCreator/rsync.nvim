@@ -125,13 +125,14 @@ function sync.sync_down_file(file)
             end
         end
         sync_remote(
-            config_table["remote_path"]..file,
+            config_table["remote_path"] .. file,
             file,
             {},
             config_table["project_path"],
             -- TODO this will refresh wrong file if switching buffers
-            function() vim.api.nvim_buf_call(buf, function()
-                vim.cmd.e()
+            function()
+                vim.api.nvim_buf_call(buf, function()
+                    vim.cmd.e()
                 end)
             end
         )
