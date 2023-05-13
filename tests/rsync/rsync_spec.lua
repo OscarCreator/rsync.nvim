@@ -52,6 +52,7 @@ describe("rsync", function()
             helpers.assert_file("test.c")
             helpers.assert_file_not_copied("should_ignore.txt")
         end
+
         it("on save", function()
             setup_with_gitignore(function ()
                 -- this triggers autocommand
@@ -79,6 +80,36 @@ describe("rsync", function()
 
             helpers.assert_file("test.c")
         end
+
+        it("synced with RsyncDownFile", function()
+            setup_with_remote_includes({
+                "remote_path = \"" .. helpers.dest .. "/\"",
+                "remote_includes = [\"remote_file.h\"]",
+            })
+            helpers.write_remote_file("remote_file.h", {"this file should be able to sync down"})
+            helpers.assert_on_remote_only("remote_file.h")
+
+            -- sync down file
+            vim.cmd.RsyncDown()
+            helpers.wait_sync()
+
+            -- edit remote file
+            local remote_text = {"some other content", "which is replaced"}
+            helpers.write_remote_file("remote_file.h", remote_text)
+
+            vim.cmd.e("remote_file.h")
+            local buf = vim.api.nvim_get_current_buf()
+            vim.cmd.RsyncDownFile()
+
+            -- open another file just to check that buffer
+            -- is update even if it not is the current.
+            vim.cmd.e("test.c")
+            -- this should update buffer after sync is done
+            helpers.wait_sync()
+
+            local lines = vim.api.nvim_buf_get_lines(buf, 0, 2, false)
+            assert(vim.deep_equal(lines, remote_text), "found:"..vim.inspect(lines))
+        end)
 
         it("synced with RsyncDown", function()
             setup_with_remote_includes({
