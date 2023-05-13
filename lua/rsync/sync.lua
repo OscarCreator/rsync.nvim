@@ -5,7 +5,7 @@ local project = require("rsync.project")
 
 local sync = {}
 
-local run_sync = function(command, project_path, on_start)
+local function run_sync(command, project_path, on_start)
     local res = vim.fn.jobstart(command, {
         on_stderr = function(_, output, _)
             -- skip when function reports no error
@@ -35,14 +35,14 @@ local run_sync = function(command, project_path, on_start)
     end
 end
 
-local sync_project = function(source_path, destination_path, project_path)
+local function sync_project(source_path, destination_path, project_path)
     local command = "rsync -varz -f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
     run_sync(command, project_path, function(res)
         _RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_up", job_id = res }
     end)
 end
 
-local sync_remote = function(source_path, destination_path, include_extra, project_path)
+local function sync_remote(source_path, destination_path, include_extra, project_path)
     local filters = ""
     if type(include_extra) == "table" then
         local filter_template = "-f'+ %s' "
@@ -52,6 +52,7 @@ local sync_remote = function(source_path, destination_path, include_extra, proje
     elseif type(include_extra) == "string" then
         filters = "-f'+ " .. include_extra .. "' "
     end
+
     local command = "rsync -varz "
         .. filters
         .. "-f':- .gitignore' -f'- .nvim' "
