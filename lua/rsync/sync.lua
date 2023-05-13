@@ -5,7 +5,7 @@ local project = require("rsync.project")
 
 local sync = {}
 
-local function run_sync(command, project_path, on_start)
+local function run_sync(command, project_path, on_start, on_exit)
     local res = vim.fn.jobstart(command, {
         on_stderr = function(_, output, _)
             -- skip when function reports no error
@@ -18,7 +18,11 @@ local function run_sync(command, project_path, on_start)
         -- job done executing
         on_exit = function(_, code, _)
             _RsyncProjectConfigs[project_path]["sync_status"] = { code = code, progress = "exit" }
-            if code ~= 0 then
+            if code == 0 then
+                if on_exit ~= nil then
+                    on_exit()
+                end
+            else
                 vim.api.nvim_err_writeln("rsync execute with result code: " .. code)
             end
         end,
@@ -42,7 +46,7 @@ local function sync_project(source_path, destination_path, project_path)
     end)
 end
 
-local function sync_remote(source_path, destination_path, include_extra, project_path)
+local function sync_remote(source_path, destination_path, include_extra, project_path, on_exit)
     local filters = ""
     if type(include_extra) == "table" then
         local filter_template = "-f'+ %s' "
@@ -61,10 +65,10 @@ local function sync_remote(source_path, destination_path, include_extra, project
         .. destination_path
     run_sync(command, project_path, function(res)
         _RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_down", job_id = res }
-    end)
+    end, on_exit)
 end
 
-sync.sync_up = function()
+function sync.sync_up()
     local config_table = project.get_config_table()
     if config_table ~= nil then
         if config_table["sync_status"]["progress"] == "start" then
@@ -82,7 +86,7 @@ sync.sync_up = function()
     end
 end
 
-sync.sync_down = function()
+function sync.sync_down()
     local config_table = project.get_config_table()
 
     if config_table ~= nil then
@@ -100,6 +104,36 @@ sync.sync_down = function()
             config_table["project_path"],
             config_table["remote_includes"],
             config_table["project_path"]
+        )
+    else
+        vim.api.nvim_err_writeln("Could not find rsync.toml")
+    end
+end
+
+function sync.sync_down_file(file)
+    local buf = vim.api.nvim_get_current_buf()
+    local config_table = project.get_config_table()
+
+    if config_table ~= nil then
+        if config_table["sync_status"]["progress"] == "start" then
+            if config_table["sync_status"]["state"] ~= "sync_down" then
+                vim.api.nvim_err_writeln("Could not sync down, due to sync still running")
+                return
+            else
+                -- todo convert to jobwait + lua coroutines
+                vim.fn.jobstop(config_table["sync_status"]["job_id"])
+            end
+        end
+        sync_remote(
+            config_table["remote_path"]..file,
+            file,
+            {},
+            config_table["project_path"],
+            -- TODO this will refresh wrong file if switching buffers
+            function() vim.api.nvim_buf_call(buf, function()
+                vim.cmd.e()
+                end)
+            end
         )
     else
         vim.api.nvim_err_writeln("Could not find rsync.toml")
