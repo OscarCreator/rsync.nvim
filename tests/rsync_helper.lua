@@ -20,6 +20,10 @@ function H.write_remote_file(name, content)
     assert.equals(true, ok)
 end
 
+function H.delete_file(name)
+    vim.fn.delete(name)
+end
+
 function H.mkdir(name)
     vim.fn.mkdir(H.source .. "/" .. name)
 end
@@ -43,6 +47,13 @@ end
 
 function H.assert_on_remote_only(name)
     vim.fn.system("test -f " .. H.dest .. "/" .. name)
+    assert.equals(0, vim.v.shell_error)
+    vim.fn.system("! test -f " .. H.source .. "/" .. name)
+    assert.equals(0, vim.v.shell_error)
+end
+
+function H.assert_file_delete(name)
+    vim.fn.system("! test -f " .. H.dest .. "/" .. name)
     assert.equals(0, vim.v.shell_error)
     vim.fn.system("! test -f " .. H.source .. "/" .. name)
     assert.equals(0, vim.v.shell_error)

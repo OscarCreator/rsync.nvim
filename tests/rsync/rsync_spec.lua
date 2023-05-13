@@ -67,20 +67,62 @@ describe("rsync", function()
         end)
     end)
 
-    describe("remote includes", function()
-        local function setup_with_remote_includes(config)
-            helpers.write_file(".nvim/rsync.toml", config)
+    local function setup_with_remote_includes(config)
+        helpers.write_file(".nvim/rsync.toml", config)
 
-            helpers.write_file(".gitignore", { "remote_file.h" })
-            helpers.write_file("test.c", { "eueueu" })
-            helpers.assert_file_not_copied("test.c")
+        helpers.write_file(".gitignore", { "remote_file*" })
+        helpers.write_file("test.c", { "eueueu" })
+        helpers.assert_file_not_copied("test.c")
+
+        vim.cmd.w()
+        helpers.wait_sync()
+
+        helpers.assert_file("test.c")
+    end
+
+    describe("files deleted", function()
+        it("on remote", function()
+            setup_with_remote_includes({
+                'remote_path = "' .. helpers.dest .. '/"',
+                'remote_includes = ["remote_file.h"]',
+            })
+            -- add files to remote (not part of .gitignore))
+            helpers.write_file("to_be_deleted.md", {"does not matter", "really."})
+            helpers.write_remote_file("remote_file.h", { "this file should be able to sync down" })
+            helpers.assert_on_remote_only("remote_file.h")
+            helpers.write_remote_file("remote_file_2.t", { "some nonsense" })
+            helpers.assert_on_remote_only("remote_file_2.t")
 
             vim.cmd.w()
             helpers.wait_sync()
 
-            helpers.assert_file("test.c")
-        end
+            -- delete the file locally
+            helpers.delete_file("to_be_deleted.md")
 
+            -- switch file
+            vim.cmd.e("test.c")
+            -- sync up
+            vim.cmd.w()
+            helpers.wait_sync()
+
+            -- sync down does not remove file
+            helpers.assert_file_delete("to_be_deleted.md")
+            helpers.assert_on_remote_only("remote_file_2.t")
+            helpers.assert_on_remote_only("remote_file.h")
+            helpers.assert_file("test.c")
+
+            -- down sync still works
+            vim.cmd.RsyncDown()
+            helpers.wait_sync()
+
+            --
+            helpers.assert_file_delete("to_be_deleted.md")
+            helpers.assert_files({"remote_file.h", "test.c"})
+            helpers.assert_on_remote_only("remote_file_2.t")
+        end)
+    end)
+
+    describe("remote includes", function()
         it("synced with RsyncDownFile", function()
             setup_with_remote_includes({
                 'remote_path = "' .. helpers.dest .. '/"',

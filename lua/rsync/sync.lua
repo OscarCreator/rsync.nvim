@@ -40,7 +40,7 @@ local function run_sync(command, project_path, on_start, on_exit)
 end
 
 local function sync_project(source_path, destination_path, project_path)
-    local command = "rsync -varz -f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
+    local command = "rsync -varz --delete -f':- .gitignore' -f'- .nvim' " .. source_path .. " " .. destination_path
     run_sync(command, project_path, function(res)
         _RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_up", job_id = res }
     end)
