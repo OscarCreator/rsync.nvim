@@ -54,4 +54,4 @@ rsync.status()
     |rsync-config| of the project to make this function faster.
 
 
-
+ vim:tw=78:ts=8:ft=help:norl:
