@@ -17,8 +17,6 @@ describe("rsync", function()
             helpers.assert_file_not_copied("test.c")
 
             code()
-
-
         end
 
         it("on save", function()
@@ -38,8 +36,8 @@ describe("rsync", function()
             end)
         end)
 
-        it("on RsyncUpFile inside folder", function ()
-            setup( function()
+        it("on RsyncUpFile inside folder", function()
+            setup(function()
                 vim.cmd.w()
                 helpers.wait_sync()
                 helpers.assert_file("test.c")
@@ -53,13 +51,11 @@ describe("rsync", function()
                 vim.cmd.RsyncUpFile()
                 helpers.wait_sync()
                 helpers.assert_file("sub/second_test.tt")
-
-
             end)
         end)
 
-        it("on RsyncUpFile inside not exsisting remote folder", function ()
-            setup( function()
+        it("on RsyncUpFile inside not exsisting remote folder", function()
+            setup(function()
                 helpers.mkdir("sub")
                 helpers.write_file("sub/second_test.tt", { "labbal" })
 
@@ -102,8 +98,8 @@ describe("rsync", function()
             end)
         end)
 
-        it("on RsyncUpFile", function ()
-            setup_with_gitignore( function()
+        it("on RsyncUpFile", function()
+            setup_with_gitignore(function()
                 helpers.write_file("second_test.tt", { "labbal" })
                 vim.cmd.e("test.c")
                 vim.cmd.RsyncUpFile()
