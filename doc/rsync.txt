@@ -1,0 +1,57 @@
+*rsync.txt*  rsync.nvim
+
+==============================================================================
+1. Introduction                                             *rsync.nvim*
+
+This plugin leverages the power of rsync to sync your entire project
+on save. So if you have a remote evironment but want to use you local
+tools to edit files then this is the perfect plugin for you!
+
+                                                          *rsync-config*
+|rsync.nvim| looks for `.nvim/rsync.toml` file in the root of your project.
+The configuration options valid are:
+
+- remote_path
+    Local/remote filepath.
+
+- remote_includes
+    Filepaths to files part of .gitignore but wanted to be included when
+    syncing down with |:RsyncDown|.
+
+
+==============================================================================
+2. Commands                                        *rsync-user-commands*
+
+
+                                                              *:RsyncUp*
+:RsyncUp
+    Sync's current project to the remote.
+                                                          *:RsyncUpFile*
+:RsyncUpFile
+    Sync's current file to the remote.
+    This works for all files, even if file is part of the .gitignore
+                                                            *:RsyncDown*
+:RsyncDown
+    Sync's current project from remote to the local path.
+                                                        *:RsyncDownFile*
+:RsyncDownFile
+    Sync's current file from the remote.
+    This will also refresh the buffer after the sync is done.
+
+==============================================================================
+3. Functions                                            *rsync-function*
+
+
+                                                        *rsync.config()*
+rsync.config()
+    If current project have a |rsync-config| file, then the config is retured
+    as a lua table. Otherwise this will return nil.
+
+                                                        *rsync.status()*
+rsync.status()
+    Returns the sync status. This can be useful to use inside a statusline.
+    As this is the main usage for this function, |rsync.nvim| caches the
+    |rsync-config| of the project to make this function faster.
+
+
+

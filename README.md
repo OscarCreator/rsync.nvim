@@ -10,7 +10,7 @@ Asynchronously transfer your files with `rsync` on save.
 ## Installation
 
 ```lua
-use {'OscarCreator/rsync.nvim', run = 'make'
+use {'OscarCreator/rsync.nvim', run = 'make',
     requires = {
         {'nvim-lua/plenary.nvim'}
     }
