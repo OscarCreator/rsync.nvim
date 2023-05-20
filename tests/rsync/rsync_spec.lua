@@ -18,20 +18,55 @@ describe("rsync", function()
 
             code()
 
-            helpers.wait_sync()
-            helpers.assert_file("test.c")
+
         end
 
         it("on save", function()
             setup(function()
                 -- this triggers autocommand
                 vim.cmd.w()
+                helpers.wait_sync()
+                helpers.assert_file("test.c")
             end)
         end)
 
         it("on RsyncUp", function()
             setup(function()
                 vim.cmd.RsyncUp()
+                helpers.wait_sync()
+                helpers.assert_file("test.c")
+            end)
+        end)
+
+        it("on RsyncUpFile inside folder", function ()
+            setup( function()
+                vim.cmd.w()
+                helpers.wait_sync()
+                helpers.assert_file("test.c")
+
+                helpers.mkdir("sub")
+                helpers.write_file("sub/second_test.tt", { "labbal" })
+                -- this is needed due to rsync will not create remote directories
+                -- if they do not exist
+                helpers.mkdir_remote("sub")
+
+                vim.cmd.RsyncUpFile()
+                helpers.wait_sync()
+                helpers.assert_file("sub/second_test.tt")
+
+
+            end)
+        end)
+
+        it("on RsyncUpFile inside not exsisting remote folder", function ()
+            setup( function()
+                helpers.mkdir("sub")
+                helpers.write_file("sub/second_test.tt", { "labbal" })
+
+                vim.cmd.RsyncUpFile()
+                helpers.wait_sync()
+                helpers.assert_file("sub/second_test.tt")
+                helpers.assert_file_not_copied("test.c")
             end)
         end)
     end)
@@ -48,7 +83,6 @@ describe("rsync", function()
 
             code()
 
-            helpers.wait_sync()
             helpers.assert_file("test.c")
             helpers.assert_file_not_copied("should_ignore.txt")
         end
@@ -57,12 +91,24 @@ describe("rsync", function()
             setup_with_gitignore(function()
                 -- this triggers autocommand
                 vim.cmd.w()
+                helpers.wait_sync()
             end)
         end)
 
         it("on RsyncUp", function()
             setup_with_gitignore(function()
                 vim.cmd.RsyncUp()
+                helpers.wait_sync()
+            end)
+        end)
+
+        it("on RsyncUpFile", function ()
+            setup_with_gitignore( function()
+                helpers.write_file("second_test.tt", { "labbal" })
+                vim.cmd.e("test.c")
+                vim.cmd.RsyncUpFile()
+                helpers.wait_sync()
+                helpers.assert_file_not_copied("second_test.tt")
             end)
         end)
     end)

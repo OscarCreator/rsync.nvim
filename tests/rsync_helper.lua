@@ -28,6 +28,10 @@ function H.mkdir(name)
     vim.fn.mkdir(H.source .. "/" .. name)
 end
 
+function H.mkdir_remote(name)
+    vim.fn.mkdir(H.dest .. "/" .. name)
+end
+
 function H.assert_file(name)
     vim.fn.system("diff " .. H.source .. "/" .. name .. " " .. H.dest .. "/" .. name)
     -- check that files do not differ

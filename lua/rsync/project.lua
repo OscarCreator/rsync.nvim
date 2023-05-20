@@ -26,8 +26,7 @@ end
 -- @param config_file_path a path to the config file
 -- @return the project path
 local function get_project_path(config_file_path)
-    -- TODO maybe add 2 to sub length
-    local project_path = string.sub(config_file_path, 1, -string.len(config_path))
+    local project_path = string.sub(config_file_path, 1, - (1 + string.len(config_path)))
     return project_path
 end
 
