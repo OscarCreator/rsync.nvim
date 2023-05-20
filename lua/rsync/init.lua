@@ -42,6 +42,11 @@ vim.api.nvim_create_user_command("RsyncDownFile", function()
     sync.sync_down_file(file)
 end, {})
 
+vim.api.nvim_create_user_command("RsyncUpFile", function()
+    local file_relative = vim.fn.expand("%:.")
+    sync.sync_up_file(file_relative)
+end, {})
+
 --- get current sync status of project
 M.status = function()
     local config_table = project.get_config_table()

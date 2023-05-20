@@ -86,6 +86,43 @@ function sync.sync_up()
     end
 end
 
+function sync.sync_up_file(filename)
+    local config_table = project.get_config_table()
+
+    -- TODO redo to not need to copy this
+    if config_table ~= nil then
+        if config_table["sync_status"]["progress"] == "start" then
+            if config_table["sync_status"]["state"] ~= "sync_down" then
+                vim.api.nvim_err_writeln("Could not sync down, due to sync still running")
+                return
+            else
+                -- todo convert to jobwait + lua coroutines
+                vim.fn.jobstop(config_table["sync_status"]["job_id"])
+            end
+        end
+
+        local full = vim.fn.expand("%:p")
+        local name = vim.fn.expand("%:t")
+        local path = require("plenary.path")
+
+        local relative_path = path:new(full):make_relative(config_table["project_path"])
+        local rpath_no_filename = string.sub(relative_path, 1, -(1 + string.len(name)))
+
+        local command = "rsync -az --mkpath "
+            .. config_table["project_path"]
+            .. filename
+            .. " "
+            .. config_table["remote_path"]
+            .. rpath_no_filename
+        local project_path = config_table["project_path"]
+        run_sync(command, project_path, function(res)
+            _RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_up", job_id = res }
+        end)
+    else
+        vim.api.nvim_err_writeln("Could not find rsync.toml")
+    end
+end
+
 function sync.sync_down()
     local config_table = project.get_config_table()
 
@@ -124,18 +161,11 @@ function sync.sync_down_file(file)
                 vim.fn.jobstop(config_table["sync_status"]["job_id"])
             end
         end
-        sync_remote(
-            config_table["remote_path"] .. file,
-            file,
-            {},
-            config_table["project_path"],
-            -- TODO this will refresh wrong file if switching buffers
-            function()
-                vim.api.nvim_buf_call(buf, function()
-                    vim.cmd.e()
-                end)
-            end
-        )
+        sync_remote(config_table["remote_path"] .. file, file, {}, config_table["project_path"], function()
+            vim.api.nvim_buf_call(buf, function()
+                vim.cmd.e()
+            end)
+        end)
     else
         vim.api.nvim_err_writeln("Could not find rsync.toml")
     end
