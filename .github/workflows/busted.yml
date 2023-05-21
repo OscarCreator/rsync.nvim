@@ -30,4 +30,4 @@ jobs:
           neovim: true
           version: nightly
       - name: run test
-        run: make test
+        run: make testcov

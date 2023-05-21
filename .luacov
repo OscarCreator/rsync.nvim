@@ -1,0 +1,12 @@
+return {
+  include = {
+    "lua/rsync/.+$",
+    "tests/rsync/.+$",
+  },
+  modules = {
+      ["rsync.*"] = "lua/",
+  },
+  tick = true,
+  includeuntestedfiles = true,
+}
+-- vim:ft=lua
