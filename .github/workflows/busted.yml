@@ -39,3 +39,8 @@ jobs:
         run: NOCLEAN=1 make testcov
       - name: upload coverage report
         uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
+          files: luacov.report.out
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
