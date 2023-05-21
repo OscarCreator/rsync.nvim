@@ -24,7 +24,7 @@ jobs:
         with:
           repository: nvim-lua/plenary.nvim
           path: plenary.nvim
-      - name: build luacov
+      - name: install luacov
         run: |
           sudo apt install luarocks
           sudo luarocks install luacov

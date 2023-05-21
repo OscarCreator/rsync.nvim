@@ -1,7 +1,6 @@
 return {
   include = {
     "lua/rsync/.+$",
-    "tests/rsync/.+$",
   },
   modules = {
       ["rsync.*"] = "lua/",
