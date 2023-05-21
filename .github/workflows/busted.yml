@@ -41,6 +41,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
-          files: luacov.report.out, luacov.stats.out
+          files: luacov.report.out, luacov.report.out.index luacov.stats.out
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
