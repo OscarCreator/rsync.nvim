@@ -36,11 +36,11 @@ jobs:
           neovim: true
           version: nightly
       - name: run test
-        run: NOCLEAN=1 make testcov-html
+        run: NOCLEAN=1 make testcov
       - name: upload coverage report
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
-          files: luacov-html/
+          files: luacov.report.out, luacov.stats.out
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true

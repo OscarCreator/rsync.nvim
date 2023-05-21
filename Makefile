@@ -38,6 +38,8 @@ testcov:
 	TEST_COV=1 $(MAKE) --no-print-directory test
 	@luacov-console lua/rsync/
 	@luacov-console -s
+	@luacov
+
 ifeq ($(NOCLEAN), )
 	@$(MAKE) --no-print-directory test-clean
 endif
@@ -46,6 +48,7 @@ endif
 testcov-html: 
 	NOCLEAN=1 $(MAKE) --no-print-directory testcov
 	luacov -r html
+	xdg-open luacov-html/index.html
 
 .PHONY: test-clean
 test-clean:
