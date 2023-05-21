@@ -36,4 +36,6 @@ jobs:
           neovim: true
           version: nightly
       - name: run test
-        run: make testcov
+        run: NOCLEAN=1 make testcov
+      - name: upload coverage report
+        uses: codecov/codecov-action@v3
