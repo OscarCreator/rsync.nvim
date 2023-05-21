@@ -24,6 +24,11 @@ jobs:
         with:
           repository: nvim-lua/plenary.nvim
           path: plenary.nvim
+      - name: build luacov
+        run: |
+          sudo apt install luarocks
+          sudo luarocks install luacov
+          sudo luarocks install luacov-console
       - name: install neovim
         uses: rhysd/action-setup-vim@v1
         with:
