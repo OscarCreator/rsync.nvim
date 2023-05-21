@@ -7,3 +7,4 @@ coverage:
     project:
       default:
         threshold: "1%"
+        if_ci_failed: error
