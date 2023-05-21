@@ -2,6 +2,9 @@ return {
   include = {
     "lua/rsync/.+$",
   },
+  exclude = {
+      "tests%/.+$",
+  },
   modules = {
       ["rsync.*"] = "lua/",
   },
