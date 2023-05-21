@@ -28,6 +28,7 @@ jobs:
         run: |
           sudo apt install luarocks
           sudo luarocks install luacov
+          sudo luarocks install cluacov
           sudo luarocks install luacov-console
       - name: install neovim
         uses: rhysd/action-setup-vim@v1
