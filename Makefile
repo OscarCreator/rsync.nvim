@@ -32,3 +32,25 @@ cargocheck:
 .PHONY: test
 test:
 	nvim --headless --noplugin -u $(MINIMAL_PATH) -c "PlenaryBustedDirectory $(TEST_DIR) {minimal_init = '$(MINIMAL_INIT_PATH)'}"
+
+.PHONY: testcov
+testcov:
+	TEST_COV=1 $(MAKE) --no-print-directory test
+	@luacov-console lua/rsync/
+	@luacov-console -s
+ifeq ($(NOCLEAN), )
+	@$(MAKE) --no-print-directory test-clean
+endif
+
+.PHONY: testcov-html
+testcov-html: 
+	NOCLEAN=1 $(MAKE) --no-print-directory testcov
+	luacov -r html
+	xdg-open luacov-html/index.html
+
+.PHONY: test-clean
+test-clean:
+	@rm -rf luacov*
+
+.PHONY: clean
+clean: test-clean
