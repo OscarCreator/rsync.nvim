@@ -1,8 +1,9 @@
 [![codecov](https://codecov.io/gh/OscarCreator/rsync.nvim/branch/master/graph/badge.svg?token=GYELY6KJZ6)](https://codecov.io/gh/OscarCreator/rsync.nvim)
 
 # rsync.nvim
-
 Asynchronously transfer your files with `rsync` on save.
+
+![output](https://github.com/OscarCreator/rsync.nvim/assets/53407525/c5c402bd-98ac-4899-9ce0-ebf27db28d29)
 
 ## Dependencies
 
