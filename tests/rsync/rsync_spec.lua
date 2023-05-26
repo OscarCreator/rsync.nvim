@@ -11,59 +11,49 @@ describe("rsync", function()
     end)
 
     describe("files copied", function()
-        local function setup(code)
+        before_each(function()
             helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"' })
             helpers.write_file("test.c", { "eueueu" })
             helpers.assert_file_not_copied("test.c")
-
-            code()
-        end
+        end)
 
         it("on save", function()
-            setup(function()
-                -- this triggers autocommand
-                vim.cmd.w()
-                helpers.wait_sync()
-                helpers.assert_file("test.c")
-            end)
+            -- this triggers autocommand
+            vim.cmd.w()
+            helpers.wait_sync()
+            helpers.assert_file("test.c")
         end)
 
         it("on RsyncUp", function()
-            setup(function()
-                vim.cmd.RsyncUp()
-                helpers.wait_sync()
-                helpers.assert_file("test.c")
-            end)
+            vim.cmd.RsyncUp()
+            helpers.wait_sync()
+            helpers.assert_file("test.c")
         end)
 
         it("on RsyncUpFile inside folder", function()
-            setup(function()
-                vim.cmd.w()
-                helpers.wait_sync()
-                helpers.assert_file("test.c")
+            vim.cmd.w()
+            helpers.wait_sync()
+            helpers.assert_file("test.c")
 
-                helpers.mkdir("sub")
-                helpers.write_file("sub/second_test.tt", { "labbal" })
-                -- this is needed due to rsync will not create remote directories
-                -- if they do not exist
-                helpers.mkdir_remote("sub")
+            helpers.mkdir("sub")
+            helpers.write_file("sub/second_test.tt", { "labbal" })
+            -- this is needed due to rsync will not create remote directories
+            -- if they do not exist
+            helpers.mkdir_remote("sub")
 
-                vim.cmd.RsyncUpFile()
-                helpers.wait_sync()
-                helpers.assert_file("sub/second_test.tt")
-            end)
+            vim.cmd.RsyncUpFile()
+            helpers.wait_sync()
+            helpers.assert_file("sub/second_test.tt")
         end)
 
         it("on RsyncUpFile inside not exsisting remote folder", function()
-            setup(function()
-                helpers.mkdir("sub")
-                helpers.write_file("sub/second_test.tt", { "labbal" })
+            helpers.mkdir("sub")
+            helpers.write_file("sub/second_test.tt", { "labbal" })
 
-                vim.cmd.RsyncUpFile()
-                helpers.wait_sync()
-                helpers.assert_file("sub/second_test.tt")
-                helpers.assert_file_not_copied("test.c")
-            end)
+            vim.cmd.RsyncUpFile()
+            helpers.wait_sync()
+            helpers.assert_file("sub/second_test.tt")
+            helpers.assert_file_not_copied("test.c")
         end)
     end)
 
