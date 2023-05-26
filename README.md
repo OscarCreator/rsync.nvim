@@ -1,10 +1,12 @@
+[![codecov](https://codecov.io/gh/OscarCreator/rsync.nvim/branch/master/graph/badge.svg?token=GYELY6KJZ6)](https://codecov.io/gh/OscarCreator/rsync.nvim)
+
 # rsync.nvim
 
 Asynchronously transfer your files with `rsync` on save.
 
 ## Dependencies
 
-- cargo
+- [cargo](https://www.rust-lang.org/tools/install)
 - rsync
 
 ## Installation
