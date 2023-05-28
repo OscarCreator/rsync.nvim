@@ -1,8 +1,9 @@
 return {
   include = {
-    "lua/rsync/.+$",
+      "lua/rsync/.+$",
   },
   exclude = {
+      "lua/rsync/health",
       "tests%/.+$",
   },
   modules = {
