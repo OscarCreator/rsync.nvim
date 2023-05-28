@@ -20,7 +20,7 @@ describe("rsync", function()
 
     describe("setup config", function()
         it("todo", function()
-            require("rsync").setup({unknown = "field"})
+            require("rsync").setup({ unknown = "field" })
         end)
     end)
 

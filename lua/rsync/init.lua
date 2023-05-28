@@ -68,12 +68,12 @@ M.status = function()
 end
 
 --- get current project config
-M.config = function()
+function M.config()
     return project.get_config_table()
 end
 
 -- TODO
-M.setup = function(user_config)
+function M.setup(user_config)
     require("rsync.config").set_defaults(user_config)
 end
 
