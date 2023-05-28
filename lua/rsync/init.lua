@@ -4,6 +4,7 @@ local rsync_nvim = vim.api.nvim_create_augroup("rsync_nvim", { clear = true })
 
 local project = require("rsync.project")
 local sync = require("rsync.sync")
+local config = require("rsync.config")
 
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
     callback = function()
@@ -74,7 +75,7 @@ end
 
 -- TODO
 function M.setup(user_config)
-    require("rsync.config").set_defaults(user_config)
+    config.set_defaults(user_config)
 end
 
 return M
