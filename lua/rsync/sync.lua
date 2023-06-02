@@ -2,16 +2,16 @@
 -- Syncing functionality
 
 local project = require("rsync.project")
+local log = require("rsync.log")
 
 local sync = {}
 
 local function run_sync(command, project_path, on_start, on_exit)
     local res = vim.fn.jobstart(command, {
         on_stderr = function(_, output, _)
-            -- skip when function reports no error
+            -- skip when function reports empty error
             if vim.inspect(output) ~= vim.inspect({ "" }) then
-                -- TODO print save output to temporary log file
-                vim.api.nvim_err_writeln("Error executing: " .. command)
+                log.info(string.format("run_sync command: '%s', on_stderr: '%s'", command, vim.inspect(output)))
             end
         end,
 
@@ -23,7 +23,7 @@ local function run_sync(command, project_path, on_start, on_exit)
                     on_exit()
                 end
             else
-                vim.api.nvim_err_writeln("rsync execute with result code: " .. code)
+                log.info(string.format("run_sync command: '%s', on_exit with code ~= '%s'", command, code))
             end
         end,
         stdout_buffered = true,
@@ -31,9 +31,10 @@ local function run_sync(command, project_path, on_start, on_exit)
     })
 
     if res == -1 then
+        log.error(string.format("run_sync command: '%s', Could not execute rsync", command))
         error("Could not execute rsync. Make sure that rsync in on your path")
     elseif res == 0 then
-        print("Invalid command: " .. command)
+        log.error(string.format("run_sync command: '%s', Invalid command", command))
     else
         on_start(res)
     end
