@@ -1,4 +1,4 @@
-return require("plenary.log").new {
+return require("plenary.log").new({
     plugin = "rsync",
     level = "info",
-}
+})
