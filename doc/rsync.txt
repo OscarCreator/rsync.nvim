@@ -37,6 +37,10 @@ The configuration options valid are:
 :RsyncDownFile
     Sync's current file from the remote.
     This will also refresh the buffer after the sync is done.
+                                                             :RsyncLog
+:RsyncLog
+    Open cached log for rsync.nvim
+
 
 ==============================================================================
 3. Functions                                            *rsync-function*
