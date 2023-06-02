@@ -5,6 +5,7 @@ local rsync_nvim = vim.api.nvim_create_augroup("rsync_nvim", { clear = true })
 local project = require("rsync.project")
 local sync = require("rsync.sync")
 local config = require("rsync.config")
+local log = require("rsync.log")
 
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
     callback = function()
@@ -46,6 +47,11 @@ end, {})
 vim.api.nvim_create_user_command("RsyncUpFile", function()
     local file_relative = vim.fn.expand("%:.")
     sync.sync_up_file(file_relative)
+end, {})
+
+vim.api.nvim_create_user_command("RsyncLog", function()
+    local log_file = string.format("%s/%s.log", vim.api.nvim_call_function("stdpath", { "cache" }), log.plugin)
+    vim.cmd.tabe(log_file)
 end, {})
 
 --- get current sync status of project

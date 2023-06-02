@@ -3,6 +3,7 @@
 
 local rsync_nvim = require("rsync_nvim")
 local path = require("plenary.path")
+local log = require("rsync.log")
 
 local project = {}
 
@@ -40,6 +41,7 @@ local function get_config(config_file_path)
         return table
     else
         error("Could not decode rsync.toml")
+        log.error(string.format("get_config, could not decode '%s'", config_file_path))
     end
 end
 
