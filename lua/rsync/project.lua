@@ -75,7 +75,7 @@ function project.get_config_table()
                 code = 0,
                 state = SyncState.DONE,
                 job_id = -1,
-            }
+            },
         }
         _RsyncProjectConfigs[project_path] = table
         return table

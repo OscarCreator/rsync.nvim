@@ -77,12 +77,12 @@ end
 -- TODO add different for file/project wait
 function H.wait_sync()
     local config = rsync.config()
-    vim.fn.jobwait({ config.status.project.job_id})
+    vim.fn.jobwait({ config.status.project.job_id })
 end
 
 function H.wait_sync_file()
     local config = rsync.config()
-    vim.fn.jobwait({ config.status.file.job_id})
+    vim.fn.jobwait({ config.status.file.job_id })
 end
 
 return H

@@ -3,7 +3,7 @@
 
 -- sync up/down file = own syncs and statuses, no status need to be shown
 --  opt.file.start_window - time window to wait if an sync is in progress, default = 0
---      
+--
 -- sync up/down = should not be able run with each other
 --
 --
@@ -58,7 +58,6 @@ local function safe_sync(command, on_start, on_exit)
     end
 end
 
-
 --- Creates valid rsync command to sync up
 --- @param project_path string the path to project
 --- @param destination_path string the destination path which files will be synced to
@@ -80,7 +79,6 @@ function sync.sync_up()
         elseif current_status.state == ProjectSyncState.SYNC_UP then
             _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncState.STOPPED
 
-            --table.insert(_RsyncProjectConfigs[config_table.project_path].status.project.stopped[current_status.job_id], true)
             vim.fn.jobstop(current_status.job_id)
         end
         local command = compose_sync_up_command(config_table.project_path, config_table.remote_path)
@@ -88,12 +86,6 @@ function sync.sync_up()
             _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncState.SYNC_UP
             _RsyncProjectConfigs[config_table.project_path].status.project.job_id = res
         end, function(code)
-            -- TODO move state updating to separate module
-
-            -- TODO maybe use global array as state
-            --if _RsyncProjectConfigs[config_table.project_path].status.project.stopped[current_status.job_id] == true then
-            --    _RsyncProjectConfigs[config_table.project_path].status.project.stopped[current_status.job_id]
-
             -- ignore stopped job. (SIGTERM or SIGKILL)
             if code == 143 or code == 137 then
                 return
@@ -105,13 +97,9 @@ function sync.sync_up()
             _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncState.DONE
             _RsyncProjectConfigs[config_table.project_path].status.project.code = code
             _RsyncProjectConfigs[config_table.project_path].status.project.job_id = -1
-
         end)
     end)
 end
-
-
-
 
 --- Sync file to remote
 --- @param filename string path to file to sync
@@ -134,11 +122,11 @@ function sync.sync_up_file(filename)
         local rpath_no_filename = string.sub(relative_path, 1, -(1 + string.len(name)))
 
         local command = "rsync -az --mkpath "
-        .. config_table["project_path"]
-        .. filename
-        .. " "
-        .. config_table["remote_path"]
-        .. rpath_no_filename
+            .. config_table["project_path"]
+            .. filename
+            .. " "
+            .. config_table["remote_path"]
+            .. rpath_no_filename
         local project_path = config_table.project_path
 
         safe_sync(command, function(channel_id)
@@ -153,7 +141,7 @@ function sync.sync_up_file(filename)
 end
 
 --- Creates valid rsync command to sync down
---- @param remote_includes table|string file path's to sync down but are ignored 
+--- @param remote_includes table|string file path's to sync down but are ignored
 --- @param project_path string the path to project
 --- @param destination_path string the destination path which files will be synced from
 --- @return string #valid rsync command
@@ -176,7 +164,7 @@ local function compose_sync_down_command(remote_includes, project_path, destinat
         .. project_path
     return command
     --run_sync(command, project_path, function(res)
-        --_RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_down", job_id = res }
+    --_RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_down", job_id = res }
     --end, on_exit)
 end
 
@@ -191,7 +179,8 @@ function sync.sync_down()
             _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncState.STOPPED
             vim.fn.jobstop(current_status.job_id)
         end
-        local command = compose_sync_down_command(config_table.remote_includes, config_table.project_path, config_table.remote_path)
+        local command =
+            compose_sync_down_command(config_table.remote_includes, config_table.project_path, config_table.remote_path)
         safe_sync(command, function(res)
             _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncState.SYNC_DOWN
             _RsyncProjectConfigs[config_table.project_path].status.project.job_id = res
@@ -217,12 +206,8 @@ end
 --- @param destination_path string the destination path which file will be synced from
 --- @return string #valid rsync command
 local function compose_sync_down_file_command(file_path, project_path, destination_path)
-
     -- TODO appending may not always work
-    local command = "rsync -varz "
-        .. destination_path .. file_path
-        .. " "
-        .. project_path .. file_path
+    local command = "rsync -varz " .. destination_path .. file_path .. " " .. project_path .. file_path
     return command
 end
 
@@ -236,7 +221,7 @@ function sync.sync_down_file(file)
             return
         end
         local command = compose_sync_down_file_command(file, config_table.project_path, config_table.remote_path)
-        safe_sync(command, function (channel_id)
+        safe_sync(command, function(channel_id)
             _RsyncProjectConfigs[config_table.project_path].status.file.state = SyncState.SYNC_DOWN_FILE
             _RsyncProjectConfigs[config_table.project_path].status.file.job_id = channel_id
         end, function(code)
