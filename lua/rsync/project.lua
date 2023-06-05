@@ -64,16 +64,34 @@ function project.get_config_table()
     -- decode config file and save to global table
     table = get_config(config_file_path)
     if table ~= nil then
-        table["project_path"] = project_path
-        table["sync_status"] = {
-            code = 0,
-            state = "",
-            progress = "exit",
-            job_id = -1,
+        table.project_path = project_path
+        table.status = {
+            file = {
+                code = 0,
+                state = SyncState.DONE,
+                job_id = -1,
+            },
+            project = {
+                code = 0,
+                state = SyncState.DONE,
+                job_id = -1,
+            }
         }
         _RsyncProjectConfigs[project_path] = table
         return table
     end
+end
+
+--- Run passed function if project config is found
+--- @param fn function fuction to call if config is found
+function project:run(fn)
+    local config_table = project.get_config_table()
+    if config_table == nil then
+        vim.api.nvim_err_writeln("Could not find rsync.toml")
+        return
+    end
+
+    fn(config_table)
 end
 
 -- TODO get project paths, local, remote

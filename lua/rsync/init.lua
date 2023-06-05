@@ -61,11 +61,11 @@ M.status = function()
         return ""
     end
 
-    local progress = config_table["sync_status"]["progress"]
-    local code = config_table["sync_status"]["code"]
-    if progress == "start" then
+    local progress = config_table.status.project.state
+    local code = config_table.status.project.code
+    if progress ~= ProjectSyncState.DONE then
         return "Syncing files"
-    elseif progress == "exit" then
+    elseif progress == ProjectSyncState.DONE then
         if code == 0 then
             return "Up to date"
         else
