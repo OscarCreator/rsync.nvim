@@ -85,9 +85,19 @@ function M.config()
     return project.get_config_table()
 end
 
--- TODO
+--- Setup global user defined configuration
 function M.setup(user_config)
     config.set_defaults(user_config)
+
+    if config.values.fugitive_sync then
+        vim.api.nvim_create_autocmd({ "User" }, {
+            pattern = "FugitiveChanged",
+            callback = function()
+                sync.sync_up()
+            end,
+            group = rsync_nvim
+        })
+    end
 end
 
 return M

@@ -43,8 +43,8 @@ describe("rsync", function()
     end)
 
     describe("setup config", function()
-        it("todo", function()
-            require("rsync").setup({ unknown = "field" })
+        it("fugitive_sync", function()
+            require("rsync").setup({ fugitive_sync = true })
         end)
     end)
 
