@@ -63,9 +63,9 @@ M.status = function()
 
     local progress = config_table.status.project.state
     local code = config_table.status.project.code
-    if progress ~= ProjectSyncState.DONE then
+    if progress ~= ProjectSyncStates.DONE then
         return "Syncing files"
-    elseif progress == ProjectSyncState.DONE then
+    elseif progress == ProjectSyncStates.DONE then
         if code == 0 then
             return "Up to date"
         else

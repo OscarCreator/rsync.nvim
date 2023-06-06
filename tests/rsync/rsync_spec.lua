@@ -8,6 +8,8 @@ describe("rsync", function()
 
     after_each(function()
         helpers.cleanup_workspace()
+        -- Needed to have reliable coverage
+        require("luacov.runner").save_stats()
     end)
 
     describe("au", function()
@@ -44,6 +46,18 @@ describe("rsync", function()
         it("on save", function()
             setup(function()
                 -- this triggers autocommand
+                vim.cmd.w()
+                assert.equals(require("rsync").status(), "Syncing files")
+                helpers.wait_sync()
+                assert.equals(require("rsync").status(), "Up to date")
+                helpers.assert_file("test.c")
+            end)
+        end)
+
+        it("abort save", function()
+            setup(function()
+                -- this triggers autocommand
+                vim.cmd.w()
                 vim.cmd.w()
                 assert.equals(require("rsync").status(), "Syncing files")
                 helpers.wait_sync()

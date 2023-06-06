@@ -52,7 +52,7 @@ function project.get_config_table()
     local config_file_path = get_config_file()
     -- if project does not contain config file
     if config_file_path == nil then
-        return
+        return nil
     end
     -- if config already initialize
     local project_path = get_project_path(config_file_path)
@@ -68,12 +68,12 @@ function project.get_config_table()
         table.status = {
             file = {
                 code = 0,
-                state = SyncState.DONE,
+                state = FileSyncStates.DONE,
                 job_id = -1,
             },
             project = {
                 code = 0,
-                state = SyncState.DONE,
+                state = FileSyncStates.DONE,
                 job_id = -1,
             },
         }
@@ -93,7 +93,5 @@ function project:run(fn)
 
     fn(config_table)
 end
-
--- TODO get project paths, local, remote
 
 return project

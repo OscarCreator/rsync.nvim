@@ -9,7 +9,6 @@ return {
   modules = {
       ["rsync.*"] = "lua/",
   },
-  tick = true,
   includeuntestedfiles = true,
 }
 -- vim:ft=lua
