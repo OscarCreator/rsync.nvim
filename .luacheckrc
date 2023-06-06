@@ -4,7 +4,9 @@ std = luajit
 self = false
 
 globals = {
-    "_RsyncProjectConfigs"
+    "_RsyncProjectConfigs",
+    "ProjectSyncStates",
+    "FileSyncStates",
 }
 
 ignore = {
