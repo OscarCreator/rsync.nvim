@@ -5,8 +5,8 @@ self = false
 
 globals = {
     "_RsyncProjectConfigs",
-    "ProjectSyncState",
-    "SyncState",
+    "ProjectSyncStates",
+    "FileSyncStates",
 }
 
 ignore = {

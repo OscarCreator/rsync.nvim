@@ -3,7 +3,9 @@ local project = require("rsync.project")
 describe("project", function()
     after_each(function()
         -- Needed to have reliable coverage
-        require("luacov.runner").save_stats()
+        if os.getenv("TEST_COV") then
+            require("luacov.runner").save_stats()
+        end
     end)
     describe("no rsync.toml", function()
         it("get_config_table", function()

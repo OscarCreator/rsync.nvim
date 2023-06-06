@@ -36,7 +36,7 @@ local function safe_sync(command, on_start, on_exit)
         on_exit = function(_, code, _)
             on_exit(code)
             if code ~= 0 then
-                log.info(string.format("safe_sync command: '%s', on_exit with code ~= '%s'", command, code))
+                log.info(string.format("safe_sync command: '%s', on_exit with code = '%s'", command, code))
             end
         end,
         stdout_buffered = true,
@@ -78,8 +78,10 @@ function sync.sync_up()
         end
         local command = compose_sync_up_command(config_table.project_path, config_table.remote_path)
         safe_sync(command, function(res)
-            _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncStates.SYNC_UP
-            _RsyncProjectConfigs[config_table.project_path].status.project.job_id = res
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.project.state = ProjectSyncStates.SYNC_UP
+                _RsyncProjectConfigs[config.project_path].status.project.job_id = res
+            end)
         end, function(code)
             -- ignore stopped job. (SIGTERM or SIGKILL)
             if code == 143 or code == 137 then
@@ -89,9 +91,11 @@ function sync.sync_up()
                 log.error(string.format("on_exit called with code: '%d'", code))
             end
 
-            _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncStates.DONE
-            _RsyncProjectConfigs[config_table.project_path].status.project.code = code
-            _RsyncProjectConfigs[config_table.project_path].status.project.job_id = -1
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.project.state = ProjectSyncStates.DONE
+                _RsyncProjectConfigs[config.project_path].status.project.code = code
+                _RsyncProjectConfigs[config.project_path].status.project.job_id = -1
+            end)
         end)
     end)
 end
@@ -103,8 +107,13 @@ function sync.sync_up_file(filename)
         -- do not allow starting if another command still running
         local current_status = config_table.status.file
         if current_status.state ~= FileSyncStates.DONE then
+            if current_status.state == FileSyncStates.SYNC_UP_FILE then
+                vim.api.nvim_err_writeln("File still syncing up")
+            elseif current_status.state == FileSyncStates.SYNC_DOWN_FILE then
+                vim.api.nvim_err_writeln("File still syncing down")
+            end
             -- TODO give a second try
-            vim.api.nvim_err_writeln("File still syncing up")
+
             return
         end
 
@@ -117,20 +126,23 @@ function sync.sync_up_file(filename)
         local rpath_no_filename = string.sub(relative_path, 1, -(1 + string.len(name)))
 
         local command = "rsync -az --mkpath "
-            .. config_table["project_path"]
+            .. config_table.project_path
             .. filename
             .. " "
-            .. config_table["remote_path"]
+            .. config_table.remote_path
             .. rpath_no_filename
-        local project_path = config_table.project_path
 
         safe_sync(command, function(channel_id)
-            _RsyncProjectConfigs[project_path].status.file.state = FileSyncStates.SYNC_UP_FILE
-            _RsyncProjectConfigs[project_path].status.file.job_id = channel_id
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.file.state = FileSyncStates.SYNC_UP_FILE
+                _RsyncProjectConfigs[config.project_path].status.file.job_id = channel_id
+            end)
         end, function(code)
-            _RsyncProjectConfigs[project_path].status.file.state = FileSyncStates.DONE
-            _RsyncProjectConfigs[project_path].status.file.job_id = -1
-            _RsyncProjectConfigs[project_path].status.file.code = code
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.file.state = FileSyncStates.DONE
+                _RsyncProjectConfigs[config.project_path].status.file.job_id = -1
+                _RsyncProjectConfigs[config.project_path].status.file.code = code
+            end)
         end)
     end)
 end
@@ -178,8 +190,10 @@ function sync.sync_down()
         local command =
             compose_sync_down_command(config_table.remote_includes, config_table.project_path, config_table.remote_path)
         safe_sync(command, function(res)
-            _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncStates.SYNC_DOWN
-            _RsyncProjectConfigs[config_table.project_path].status.project.job_id = res
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.project.state = ProjectSyncStates.SYNC_DOWN
+                _RsyncProjectConfigs[config.project_path].status.project.job_id = res
+            end)
         end, function(code)
             -- ignore stopped job.
             if code == 143 or code == 137 then
@@ -189,9 +203,11 @@ function sync.sync_down()
                 log.error(string.format("on_exit called with code: '%d'", code))
             end
 
-            _RsyncProjectConfigs[config_table.project_path].status.project.state = ProjectSyncStates.DONE
-            _RsyncProjectConfigs[config_table.project_path].status.project.code = code
-            _RsyncProjectConfigs[config_table.project_path].status.project.job_id = -1
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.project.state = ProjectSyncStates.DONE
+                _RsyncProjectConfigs[config.project_path].status.project.code = code
+                _RsyncProjectConfigs[config.project_path].status.project.job_id = -1
+            end)
         end)
     end)
 end
@@ -213,20 +229,28 @@ function sync.sync_down_file(filename)
         local buf = vim.api.nvim_get_current_buf()
         local current_status = config_table.status.file
         if current_status.state ~= FileSyncStates.DONE then
+            if current_status.state == FileSyncStates.SYNC_UP_FILE then
+                vim.api.nvim_err_writeln("File still syncing up")
+            elseif current_status.state == FileSyncStates.SYNC_DOWN_FILE then
+                vim.api.nvim_err_writeln("File still syncing down")
+            end
             -- TODO give a second try
-            vim.api.nvim_err_writeln("File still syncing down")
             return
         end
         local command = compose_sync_down_file_command(filename, config_table.project_path, config_table.remote_path)
         safe_sync(command, function(channel_id)
-            _RsyncProjectConfigs[config_table.project_path].status.file.state = FileSyncStates.SYNC_DOWN_FILE
-            _RsyncProjectConfigs[config_table.project_path].status.file.job_id = channel_id
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.file.state = FileSyncStates.SYNC_DOWN_FILE
+                _RsyncProjectConfigs[config.project_path].status.file.job_id = channel_id
+            end)
         end, function(code)
-            _RsyncProjectConfigs[config_table.project_path].status.file.state = FileSyncStates.DONE
-            _RsyncProjectConfigs[config_table.project_path].status.file.job_id = -1
-            _RsyncProjectConfigs[config_table.project_path].status.file.code = code
-            vim.api.nvim_buf_call(buf, function()
-                vim.cmd.e()
+            project:run(function(config)
+                _RsyncProjectConfigs[config.project_path].status.file.state = FileSyncStates.DONE
+                _RsyncProjectConfigs[config.project_path].status.file.job_id = -1
+                _RsyncProjectConfigs[config.project_path].status.file.code = code
+                vim.api.nvim_buf_call(buf, function()
+                    vim.cmd.e()
+                end)
             end)
         end)
     end)
