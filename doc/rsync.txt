@@ -37,10 +37,16 @@ The configuration options valid are:
 :RsyncDownFile
     Sync's current file from the remote.
     This will also refresh the buffer after the sync is done.
-                                                             :RsyncLog
+                                                             *:RsyncLog*
 :RsyncLog
-    Open cached log for rsync.nvim
-
+    Open cached log for rsync.nvim.
+                                                   *:RsyncProjectConfig*
+:RsyncProjectConfig
+    Print out current project config. If table is needed to extend this
+    plugin then use:
+>lua
+        require("rsync.project").get_project_config()
+<
 
 ==============================================================================
 3. Functions                                            *rsync-function*
