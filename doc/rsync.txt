@@ -40,6 +40,10 @@ The configuration options valid are:
                                                              :RsyncLog
 :RsyncLog
     Open cached log for rsync.nvim
+                                                   :RsyncProjectConfig
+:RsyncProjectConfig
+    Print out current project config. If table is needed to extend this
+    plugin then use |rsync.config()|
 
 
 ==============================================================================

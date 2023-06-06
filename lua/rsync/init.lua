@@ -54,6 +54,10 @@ vim.api.nvim_create_user_command("RsyncLog", function()
     vim.cmd.tabe(log_file)
 end, {})
 
+vim.api.nvim_create_user_command("RsyncProjectConfig", function()
+    print(vim.inspect(project.get_config_table()))
+end, {})
+
 --- get current sync status of project
 M.status = function()
     local config_table = project.get_config_table()
