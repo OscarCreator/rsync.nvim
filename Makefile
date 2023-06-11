@@ -38,7 +38,7 @@ testcov:
 	TEST_COV=1 $(MAKE) --no-print-directory test
 	@luacov-console lua/rsync/
 	@luacov-console -s
-	@luacov
+	@luacov -r lcov || luacov
 
 ifeq ($(NOCLEAN), )
 	@$(MAKE) --no-print-directory test-clean

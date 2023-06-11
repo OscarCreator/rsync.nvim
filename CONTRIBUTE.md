@@ -18,8 +18,9 @@ The following tools are used for the project:
 - [stylua](https://github.com/JohnnyMorganz/StyLua) for linting
 - [cargo](https://www.rust-lang.org/tools/install) for linting and building rust lib 
 - [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) for testing
-- [luacov](https://github.com/lunarmodules/luacov) and [luacov-console](https://github.com/spacewander/luacov-console)
-  for running tests with code coverage
+- [luacov](https://github.com/lunarmodules/luacov), [luacov-console](https://github.com/spacewander/luacov-console) 
+    and optionally [luacov-lcov](https://github.com/daurnimator/luacov-reporter-lcov)
+    if you want lcov instead of luacov reports. These are needed to run tests with code coverage
 
 Before you can run tests make sure you have built the rust source with `make build`
 after that is done then you are all set.
