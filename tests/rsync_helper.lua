@@ -67,6 +67,7 @@ function H.create_workspace()
     assert.equals(vim.fn.mkdir(H.scratch), 1)
     assert.equals(vim.fn.mkdir(H.source), 1)
     vim.cmd.cd(H.source)
+    vim.fn.system("git init")
 end
 
 function H.cleanup_workspace()

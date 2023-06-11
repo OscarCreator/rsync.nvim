@@ -60,7 +60,10 @@ end
 local function compose_sync_up_command(project_path, destination_path)
     -- TODO change depending on plugin options
     -- TODO have command be a separate type
-    return "rsync -varz --delete -f':- .gitignore' -f'- .nvim' " .. project_path .. " " .. destination_path
+    return "rsync -varz --delete "
+        --.. "-f':- .gitignore' "
+        .. "--exclude-from=\"$(git ls-files --exclude-standard -oi --directory > .git/ignores.tmp && echo '.git/ignores.tmp')\" "
+        .. "-f'- .nvim' " .. project_path .. " " .. destination_path
 end
 
 --- Sync project to remote
@@ -165,7 +168,9 @@ local function compose_sync_down_command(remote_includes, project_path, destinat
 
     local command = "rsync -varz "
         .. filters
-        .. "-f':- .gitignore' -f'- .nvim' "
+        .. "-f':- .gitignore' "
+        --.. "--exclude-from=\"$(git ls-files --exclude-standard -oi --directory > .git/ignores.tmp && echo '.git/ignores.tmp')\" "
+        .. "-f'- .nvim' "
         .. destination_path
         .. " "
         .. project_path
@@ -174,6 +179,7 @@ local function compose_sync_down_command(remote_includes, project_path, destinat
     --_RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_down", job_id = res }
     --end, on_exit)
 end
+
 
 --- Sync project from remote
 function sync.sync_down()
