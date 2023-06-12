@@ -22,7 +22,7 @@ use {'OscarCreator/rsync.nvim', run = 'make',
 
 ## Usage
 
-**rsync.nvim** looks for `nvim/rsync.toml` in the root of your project.
+**rsync.nvim** looks for `.nvim/rsync.toml` in the root of your project.
 
 The current options available:
 
