@@ -20,7 +20,7 @@ jobs:
       - name: restore cache
         uses: Swatinem/rust-cache@v2
       - name: uninstall binutils on macos
-        if: ${{ matrix.os }} == "macos-latest"
+        if: ${{ matrix.os == "macos-latest" }}
         run: | 
           brew uninstall binutils
           
@@ -46,7 +46,7 @@ jobs:
       - name: run test
         run: NOCLEAN=1 make testcov
       - name: upload coverage report
-        if: ${{ matrix.os }} == "ubuntu-latest"
+        if: ${{ matrix.os == "ubuntu-latest" }}
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
