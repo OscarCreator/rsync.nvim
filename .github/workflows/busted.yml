@@ -27,7 +27,7 @@ jobs:
       - name: uninstall binutils on macos
         if: ${{ matrix.is_mac }}
         run: | 
-          brew unlink binutils
+          cargo clean
           
       - name: build rsync
         run: |
