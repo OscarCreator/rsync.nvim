@@ -10,6 +10,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        include:
+          - os: macos-latest
+            is_mac: 1
+          - os: ubuntu-latest
+            is_unix: 1
     name: busted
     runs-on: ${{ matrix.os }}
     steps: 
@@ -20,7 +25,7 @@ jobs:
       - name: restore cache
         uses: Swatinem/rust-cache@v2
       - name: uninstall binutils on macos
-        if: ${{ matrix.os == "macos-latest" }}
+        if: ${{ matrix.is_mac }}
         run: | 
           brew uninstall binutils
           
@@ -46,7 +51,7 @@ jobs:
       - name: run test
         run: NOCLEAN=1 make testcov
       - name: upload coverage report
-        if: ${{ matrix.os == "ubuntu-latest" }}
+        if: ${{ matrix.is_unix }}
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
