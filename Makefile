@@ -7,7 +7,7 @@ MINIMAL_INIT_PATH := $(RSYNC_ROOT)/tests/minimal_init.lua
 
 .PHONY: build
 build:
-	cargo build --release
+	cargo build --release --target x86_64-apple-darwin
 	@rm -rf $(PWD)/lua/librsync_nvim.so $(PWD)/lua/deps/
 	cp $(PWD)/target/release/librsync_nvim.so $(PWD)/lua/rsync_nvim.so
 	@mkdir -p $(PWD)/lua/deps/
