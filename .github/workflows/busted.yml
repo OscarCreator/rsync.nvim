@@ -19,6 +19,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: restore cache
         uses: Swatinem/rust-cache@v2
+      - name: uninstall binutils on macos
+        if: ${{ matrix.os }} == "macos-latest"
+        run: | 
+          brew uninstall binutils
+          
       - name: build rsync
         run: |
           make build
