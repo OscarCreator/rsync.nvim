@@ -65,8 +65,10 @@ Global configuration settings with the default values
 
 ```lua
 {
-    -- triggers `RsyncUp` when fugitive thinks something might have changed in the repo
+    -- triggers `RsyncUp` when fugitive thinks something might have changed in the repo.
     fugitive_sync = false
+    -- triggers `RsyncUp` when you save a file.
+    sync_on_save = true
 }
 ```
 

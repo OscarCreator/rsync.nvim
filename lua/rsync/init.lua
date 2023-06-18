@@ -18,7 +18,9 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
             end
             vim.api.nvim_create_autocmd({ "BufWritePost" }, {
                 callback = function()
-                    sync.sync_up()
+                    if config.values.sync_on_save then
+                        sync.sync_up()
+                    end
                 end,
                 group = rsync_nvim,
                 buffer = vim.api.nvim_get_current_buf(),
