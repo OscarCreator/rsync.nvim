@@ -10,7 +10,7 @@ UNAME_S := $(shell uname -s)
 
     endif
     ifeq ($(UNAME_S),Darwin)
-		PATH := $(subst :/usr/bin/local,,$(PATH))
+		PATH := $(subst :/usr/local/bin,,$(PATH))
     endif
 
 .PHONY: build
