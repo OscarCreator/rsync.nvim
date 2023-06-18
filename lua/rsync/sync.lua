@@ -32,7 +32,7 @@ local function safe_sync(command, on_start, on_exit)
                 log.info(string.format("safe_sync command: '%s', on_stderr: '%s'", command, vim.inspect(output)))
             end
 
-            config.values.on_error(output, command)
+            config.values.on_stderr(output, command)
         end,
 
         -- job done executing

@@ -192,7 +192,7 @@ describe("rsync", function()
                         on_exit = function(code, command)
                             Res_code = code
                         end,
-                        on_error = function(data, command)
+                        on_stderr = function(data, command)
                             Res_data = data
                         end,
                     })
@@ -209,31 +209,29 @@ describe("rsync", function()
             end)
 
             it("error, on_exit called, on_error called", function()
-                setup(function()
-                    -- use an unreachable host to produce an error
-                    helpers.write_file(".nvim/rsync.toml", { 'remote_path = "ureachable@host:/tmp/rsync_test"' })
+                -- use an unreachable host to produce an error
+                helpers.write_file(".nvim/rsync.toml", { 'remote_path = "ureachable@host:/tmp/rsync_test"' })
 
-                    Res_code = -1
-                    Res_data = ""
-                    require("rsync").setup({
-                        on_exit = function(code, _)
-                            Res_code = code
-                        end,
-                        on_error = function(data, _)
-                            Res_data = data
-                        end,
-                    })
+                Res_code = -1
+                Res_data = ""
+                require("rsync").setup({
+                    on_exit = function(code, _)
+                        Res_code = code
+                    end,
+                    on_stderr = function(data, _)
+                        Res_data = data
+                    end,
+                })
 
-                    vim.cmd.w()
+                vim.cmd.w()
 
-                    helpers.wait_sync()
-                    assert.equals(Res_code, 255)
-                    local has_error, _ = string.find(Res_data[1], "ssh: Could not resolve hostname host")
-                    assert.equals(has_error, 1)
+                helpers.wait_sync()
+                assert.equals(Res_code, 255)
+                local has_error, _ = string.find(Res_data[1], "ssh: Could not resolve hostname host")
+                assert.equals(has_error, 1)
 
-                    -- restore default
-                    require("rsync").setup({ on_exit = function(_, _) end, on_error = function(_, _) end })
-                end)
+                -- restore default
+                require("rsync").setup({ on_exit = function(_, _) end, on_error = function(_, _) end })
             end)
         end)
     end)

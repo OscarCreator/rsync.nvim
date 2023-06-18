@@ -77,7 +77,7 @@ Global configuration settings with the default values
     on_exit = function(code, command)
     end,
     -- called when the rsync command prints to stderr, provides the data and the used command
-    on_error = function(data, command)
+    on_stderr = function(data, command)
     end,
 }
 ```
