@@ -185,16 +185,16 @@ describe("rsync", function()
 
     describe("files re-ignored", function()
         local filters = {
-            {"*.txt", "!should_ignore.txt", "!log.txt"},
-            {"*.txt", "!should_ignore.txt", "!build/log.txt"},
-            {"!build/log.txt", "*.txt", "!should_ignore.txt"},
-            {"!should_ignore.txt", "!build/*", "*.txt"},
-            {"should_ignore.txt", "!*.txt"},
-            {"!*.txt", "should_ignore.txt"},
-            {"!should*", "*.txt", "!build"},
+            { "*.txt", "!should_ignore.txt", "!log.txt" },
+            { "*.txt", "!should_ignore.txt", "!build/log.txt" },
+            { "!build/log.txt", "*.txt", "!should_ignore.txt" },
+            { "!should_ignore.txt", "!build/*", "*.txt" },
+            { "should_ignore.txt", "!*.txt" },
+            { "!*.txt", "should_ignore.txt" },
+            { "!should*", "*.txt", "!build" },
         }
 
-        local function setup(filter, code)
+        local function setup(key, filter, code)
             helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"' })
             helpers.write_file(".gitignore", filter)
             helpers.write_file("should_ignore.txt", { "this file\nshould not be synced" })
@@ -210,11 +210,16 @@ describe("rsync", function()
 
             helpers.assert_file("test.c")
             helpers.assert_file("should_ignore.txt")
-            helpers.assert_file("build/log.txt")
+            if key == 7 then
+                -- this pattern in unique
+                helpers.assert_file_not_copied("build/log.txt")
+            else
+                helpers.assert_file("build/log.txt")
+            end
         end
         for k, filter in pairs(filters) do
             it("on save key:" .. k, function()
-                setup(filter, function()
+                setup(k, filter, function()
                     -- this triggers autocommand
                     vim.cmd.w()
                     helpers.wait_sync()
@@ -222,7 +227,7 @@ describe("rsync", function()
             end)
 
             it("on RsyncUp key:" .. k, function()
-                setup(filter, function()
+                setup(k, filter, function()
                     vim.cmd.RsyncUp()
                     helpers.wait_sync()
                 end)
