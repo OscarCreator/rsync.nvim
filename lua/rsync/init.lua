@@ -99,7 +99,7 @@ function M.setup(user_config)
             callback = function()
                 sync.sync_up()
             end,
-            group = rsync_nvim
+            group = rsync_nvim,
         })
     end
 end
