@@ -4,12 +4,13 @@ TEST_DIR := $(RSYNC_ROOT)/tests/rsync/
 MINIMAL_PATH := $(RSYNC_ROOT)/scripts/minimal.vim
 MINIMAL_INIT_PATH := $(RSYNC_ROOT)/tests/minimal_init.lua
 
+PATH := $(PATH)
 UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-		PATH := $(PATH)
+
     endif
     ifeq ($(UNAME_S),Darwin)
-		PATH := $(echo "$PATH" | sed -e ":/usr/bin/local//")
+		PATH := $(subst :/usr/bin/local,,$(PATH))
     endif
 
 .PHONY: build
