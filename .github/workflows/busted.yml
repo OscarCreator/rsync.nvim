@@ -27,10 +27,11 @@ jobs:
       - name: uninstall binutils on macos
         if: ${{ matrix.is_mac }}
         run: | 
-          export MACHTYPE
+          echo $MACHTYPE
           
       - name: build rsync
         run: |
+          export MACHTYPE
           make build
       - name: install plenary.nvim
         uses: actions/checkout@v3
