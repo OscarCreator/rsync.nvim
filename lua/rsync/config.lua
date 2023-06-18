@@ -3,6 +3,8 @@ config.values = {
     fugitive_sync = false,
     sync_on_save = true,
     project_config_path = ".nvim/rsync.toml",
+    on_exit = function(code, command) end,
+    on_error = function(data, command) end,
 }
 
 function config.set_defaults(user_defaults)
