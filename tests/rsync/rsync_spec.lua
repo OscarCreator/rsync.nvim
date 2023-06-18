@@ -216,7 +216,6 @@ describe("rsync", function()
                 helpers.wait_sync()
             end)
         end)
-
     end)
 
     describe("files ignored", function()

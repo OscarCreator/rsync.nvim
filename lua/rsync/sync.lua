@@ -60,10 +60,23 @@ end
 local function compose_sync_up_command(project_path, destination_path)
     -- TODO change depending on plugin options
     -- TODO have command be a separate type
-    return "rsync -varz --delete "
-        --.. "-f':- .gitignore' "
-        .. "--exclude-from=\"$(git ls-files --exclude-standard -oi --directory > .git/ignores.tmp && echo '.git/ignores.tmp')\" "
-        .. "-f'- .nvim' " .. project_path .. " " .. destination_path
+
+    -- read .gitignore append lines without ! with --include
+    local f = io.open(".gitignore", "r")
+
+    local include = " "
+    local exclude = " "
+    if f ~= nil then
+        for line in f:lines() do
+            if line:sub(1, 1) == "!" then
+                include = include .. "--include='" .. line:sub(2, -1) .. "' "
+            else
+                exclude = exclude .. "--exclude='" .. line .. "' "
+            end
+        end
+    end
+
+    return "rsync -varz --delete" .. include .. exclude .. "-f'- .nvim' " .. project_path .. " " .. destination_path
 end
 
 --- Sync project to remote
@@ -168,9 +181,7 @@ local function compose_sync_down_command(remote_includes, project_path, destinat
 
     local command = "rsync -varz "
         .. filters
-        .. "-f':- .gitignore' "
-        --.. "--exclude-from=\"$(git ls-files --exclude-standard -oi --directory > .git/ignores.tmp && echo '.git/ignores.tmp')\" "
-        .. "-f'- .nvim' "
+        .. "-f':- .gitignore' -f'- .nvim' "
         .. destination_path
         .. " "
         .. project_path
@@ -179,7 +190,6 @@ local function compose_sync_down_command(remote_includes, project_path, destinat
     --_RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_down", job_id = res }
     --end, on_exit)
 end
-
 
 --- Sync project from remote
 function sync.sync_down()
