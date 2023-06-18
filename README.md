@@ -69,6 +69,8 @@ Global configuration settings with the default values
     fugitive_sync = false
     -- triggers `RsyncUp` when you save a file.
     sync_on_save = true
+    -- the path of your project configuration
+    project_config_path = ".nvim/rsync.toml"
 }
 ```
 
