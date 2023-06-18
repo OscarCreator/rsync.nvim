@@ -4,10 +4,17 @@ TEST_DIR := $(RSYNC_ROOT)/tests/rsync/
 MINIMAL_PATH := $(RSYNC_ROOT)/scripts/minimal.vim
 MINIMAL_INIT_PATH := $(RSYNC_ROOT)/tests/minimal_init.lua
 
+UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+		PATH := $(PATH)
+    endif
+    ifeq ($(UNAME_S),Darwin)
+		PATH := $(echo "$PATH" | sed -e ":/usr/bin/local//")
+    endif
 
 .PHONY: build
 build:
-	cargo build --release
+	PATH=$(PATH) cargo build --release
 	@rm -rf $(PWD)/lua/librsync_nvim.so $(PWD)/lua/deps/
 	cp $(PWD)/target/release/librsync_nvim.so $(PWD)/lua/rsync_nvim.so
 	@mkdir -p $(PWD)/lua/deps/
