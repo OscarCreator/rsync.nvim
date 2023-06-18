@@ -56,6 +56,14 @@ The configuration options valid are:
         require("rsync.project").get_config_table()
 <
 
+# TODO dunno yet how to show args in docs
+                                             *:RsyncReloadProjectConfig*
+:RsyncReloadProjectConfig
+    Reload the current project config.
+>lua
+        require("rsync.project").reload_config()
+<
+
 ==============================================================================
 3. Functions                                            *rsync-function*
 
