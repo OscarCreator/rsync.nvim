@@ -53,7 +53,7 @@ The configuration options valid are:
     Print out current project config. If table is needed to extend this
     plugin then use:
 >lua
-        require("rsync.project").get_project_config()
+        require("rsync.project").get_config_table()
 <
 
 ==============================================================================
