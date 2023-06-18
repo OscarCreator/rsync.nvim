@@ -1,5 +1,5 @@
 local config = {}
-config.values = {}
+config.values = { fugitive_sync = false }
 
 function config.set_defaults(user_defaults)
     user_defaults = vim.F.if_nil(user_defaults, {})

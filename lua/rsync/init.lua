@@ -54,8 +54,12 @@ vim.api.nvim_create_user_command("RsyncLog", function()
     vim.cmd.tabe(log_file)
 end, {})
 
+vim.api.nvim_create_user_command("RsyncConfig", function()
+    vim.print(config.values)
+end, {})
+
 vim.api.nvim_create_user_command("RsyncProjectConfig", function()
-    print(vim.inspect(project.get_config_table()))
+    vim.print(project.get_config_table())
 end, {})
 
 --- get current sync status of project
@@ -85,9 +89,19 @@ function M.config()
     return project.get_config_table()
 end
 
--- TODO
+--- Setup global user defined configuration
 function M.setup(user_config)
     config.set_defaults(user_config)
+
+    if config.values.fugitive_sync then
+        vim.api.nvim_create_autocmd({ "User" }, {
+            pattern = "FugitiveChanged",
+            callback = function()
+                sync.sync_up()
+            end,
+            group = rsync_nvim,
+        })
+    end
 end
 
 return M

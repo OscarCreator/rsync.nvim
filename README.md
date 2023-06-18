@@ -13,10 +13,16 @@ Asynchronously transfer your files with `rsync` on save.
 ## Installation
 
 ```lua
-use {'OscarCreator/rsync.nvim', run = 'make',
-    requires = {
-        {'nvim-lua/plenary.nvim'}
-    }
+use {
+    'OscarCreator/rsync.nvim',
+    run = 'make',
+    requires = {'nvim-lua/plenary.nvim'}
+    config = function()
+        require("rsync").setup({
+            -- triggers sync when git repo was changed
+            fugitive_sync = true
+        })
+    end
 }
 ```
 
@@ -48,6 +54,19 @@ RsyncDownFile      | Sync current file from remote to local folder.
 RsyncUp            | Sync all files from local* to remote folder.
 RsyncUpFile        | Sync current file from local to remote. This requires rsync version >= 3.2.3
 RsyncLog           | Open log file for rsync.nvim.
+RsyncConfig        | Print out user config.
 RsyncProjectConfig | Print out current project config.
 
 *: Files which are excluded are, everything in .gitignore and .nvim folder.
+
+## Configuration
+
+Global configuration settings with the default values
+
+```lua
+{
+    -- triggers `RsyncUp` when fugitive thinks something might have changed in the repo
+    fugitive_sync = false
+}
+```
+

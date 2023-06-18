@@ -21,6 +21,12 @@ describe("rsync", function()
             assert.equals(file_name, "rsync.log")
         end)
 
+        it("RsyncConfig", function()
+            local status, err = pcall(vim.cmd.RsyncConfig)
+            assert.equals(status, true)
+            assert.equals(err, "")
+        end)
+
         it("RsyncProjectConfig", function()
             helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"' })
             helpers.write_file("test.c", { "eueueu" })
@@ -43,8 +49,8 @@ describe("rsync", function()
     end)
 
     describe("setup config", function()
-        it("todo", function()
-            require("rsync").setup({ unknown = "field" })
+        it("fugitive_sync", function()
+            require("rsync").setup({ fugitive_sync = true })
         end)
     end)
 
