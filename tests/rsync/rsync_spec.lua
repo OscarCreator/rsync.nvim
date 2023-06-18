@@ -62,6 +62,7 @@ describe("rsync", function()
 
             code()
         end
+
         describe("not copied", function()
             require("rsync").setup({ sync_on_save = false })
             it("on save", function()
@@ -179,6 +180,58 @@ describe("rsync", function()
                     helpers.assert_file("sub/second_test.tt")
                     helpers.assert_file_not_copied("test.c")
                 end)
+            end)
+        end)
+
+        describe("hooks", function()
+            it("success, on_exit called, on_error not called", function()
+                setup(function()
+                    local res_code = -1
+                    local res_data = ""
+                    require("rsync").setup({
+                        on_exit = function(code, command)
+                            res_code = code
+                        end,
+                        on_stderr = function(data, command)
+                            res_data = data
+                        end,
+                    })
+
+                    vim.cmd.w()
+
+                    helpers.wait_sync()
+                    assert.equals(res_code, 0)
+                    assert.equals(res_data[1], "")
+
+                    -- restore default
+                    require("rsync").setup({ on_exit = function(_, _) end, on_error = function(_, _) end })
+                end)
+            end)
+
+            it("error, on_exit called, on_error called", function()
+                -- use an unreachable host to produce an error
+                helpers.write_file(".nvim/rsync.toml", { 'remote_path = "ureachable@host:/tmp/rsync_test"' })
+
+                local res_code = -1
+                local res_data = ""
+                require("rsync").setup({
+                    on_exit = function(code, _)
+                        res_code = code
+                    end,
+                    on_stderr = function(data, _)
+                        res_data = data
+                    end,
+                })
+
+                vim.cmd.w()
+
+                helpers.wait_sync()
+                assert.equals(res_code, 255)
+                local has_error, _ = string.find(res_data[1], "ssh: Could not resolve hostname host")
+                assert.equals(has_error, 1)
+
+                -- restore default
+                require("rsync").setup({ on_exit = function(_, _) end, on_error = function(_, _) end })
             end)
         end)
     end)
