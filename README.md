@@ -28,7 +28,9 @@ use {
 
 ## Usage
 
-**rsync.nvim** looks for `.nvim/rsync.toml` in the root of your project.
+**rsync.nvim** looks for `.nvim/rsync.toml` file by default in the root of
+your project. The path can also be set with the `project_config_path`
+key in the plugin configuration.
 
 The current options available:
 
