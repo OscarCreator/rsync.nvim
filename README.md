@@ -54,6 +54,7 @@ RsyncDownFile      | Sync current file from remote to local folder.
 RsyncUp            | Sync all files from local* to remote folder.
 RsyncUpFile        | Sync current file from local to remote. This requires rsync version >= 3.2.3
 RsyncLog           | Open log file for rsync.nvim.
+RsyncConfig        | Print out user config.
 RsyncProjectConfig | Print out current project config.
 
 *: Files which are excluded are, everything in .gitignore and .nvim folder.

@@ -40,6 +40,12 @@ The configuration options valid are:
                                                              *:RsyncLog*
 :RsyncLog
     Open cached log for rsync.nvim.
+                                                          *:RsyncConfig*
+:RsyncConfig
+    Print out user config. If result is needed in lua then use:
+>lua
+        require("rsync.config").values
+<
                                                    *:RsyncProjectConfig*
 :RsyncProjectConfig
     Print out current project config. If table is needed to extend this
