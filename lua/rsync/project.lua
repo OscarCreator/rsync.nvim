@@ -4,12 +4,13 @@
 local rsync_nvim = require("rsync_nvim")
 local path = require("plenary.path")
 local log = require("rsync.log")
+local config = require("rsync.config")
 
 local project = {}
 
 _RsyncProjectConfigs = _RsyncProjectConfigs or {}
 
-local config_path = ".nvim/rsync.toml"
+local config_path = config.values.project_config_path
 
 --- try find a config file.
 -- @return string, or nil

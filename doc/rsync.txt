@@ -8,7 +8,9 @@ on save. So if you have a remote evironment but want to use you local
 tools to edit files then this is the perfect plugin for you!
 
                                                           *rsync-config*
-|rsync.nvim| looks for `.nvim/rsync.toml` file in the root of your project.
+|rsync.nvim| looks for `.nvim/rsync.toml` file by default in the root of
+your project. The path can also be set with the `project_config_path`
+key in the plugin configuration.
 The configuration options valid are:
 
 - remote_path
