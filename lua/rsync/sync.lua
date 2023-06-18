@@ -53,6 +53,24 @@ local function safe_sync(command, on_start, on_exit)
     end
 end
 
+--- creates filters from .gitignore file
+local function create_filters(path)
+    local f = io.open(".gitignore", "r")
+
+    local include = " "
+    local exclude = " "
+    if f ~= nil then
+        for line in f:lines() do
+            if line:sub(1, 1) == "!" then
+                include = include .. "--include='" .. line:sub(2, -1) .. "' "
+            else
+                exclude = exclude .. "--exclude='" .. line .. "' "
+            end
+        end
+    end
+    return include, exclude
+end
+
 --- Creates valid rsync command to sync up
 --- @param project_path string the path to project
 --- @param destination_path string the destination path which files will be synced to
@@ -60,7 +78,11 @@ end
 local function compose_sync_up_command(project_path, destination_path)
     -- TODO change depending on plugin options
     -- TODO have command be a separate type
-    return "rsync -varz --delete -f':- .gitignore' -f'- .nvim' " .. project_path .. " " .. destination_path
+
+    -- read .gitignore append lines without ! with --include
+    local include, exclude = create_filters(".gitignore")
+
+    return "rsync -varz --delete" .. include .. exclude .. "-f'- .nvim' " .. project_path .. " " .. destination_path
 end
 
 --- Sync project to remote
@@ -163,16 +185,17 @@ local function compose_sync_down_command(remote_includes, project_path, destinat
         filters = "-f'+ " .. remote_includes .. "' "
     end
 
+    local include, exclude = create_filters(".gitignore")
+
     local command = "rsync -varz "
         .. filters
-        .. "-f':- .gitignore' -f'- .nvim' "
+        .. include
+        .. exclude
+        .. "-f'- .nvim' "
         .. destination_path
         .. " "
         .. project_path
     return command
-    --run_sync(command, project_path, function(res)
-    --_RsyncProjectConfigs[project_path]["sync_status"] = { progress = "start", state = "sync_down", job_id = res }
-    --end, on_exit)
 end
 
 --- Sync project from remote
