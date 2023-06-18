@@ -10,7 +10,7 @@ UNAME_S := $(shell uname -s)
 
 .PHONY: build
 build:
-	AR=$(MACHTYPE) cargo build --release
+	AR=$(MACHTYPE)-ar cargo build --release
 
 	@rm -rf $(PWD)/lua/librsync_nvim.so $(PWD)/lua/deps/
 	cp $(PWD)/target/release/librsync_nvim.so $(PWD)/lua/rsync_nvim.so
