@@ -27,7 +27,7 @@ jobs:
       - name: uninstall binutils on macos
         if: ${{ matrix.is_mac }}
         run: | 
-          echo $MACHTYPE
+          export MACHTYPE
           
       - name: build rsync
         run: |
