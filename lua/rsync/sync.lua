@@ -91,7 +91,7 @@ local function compose_sync_up_command(project_path, destination_path)
 end
 
 --- Sync project to remote
-function sync.sync_up()
+function sync.sync_up(report_error)
     project:run(function(config_table)
         local current_status = config_table.status.project
 
@@ -124,7 +124,7 @@ function sync.sync_up()
                 _RsyncProjectConfigs[project_config.project_path].status.project.job_id = -1
             end)
         end)
-    end)
+    end, report_error)
 end
 
 --- Sync file to remote

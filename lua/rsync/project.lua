@@ -85,10 +85,12 @@ end
 
 --- Run passed function if project config is found
 --- @param fn function fuction to call if config is found
-function project:run(fn)
+function project:run(fn, report_error)
     local config_table = project.get_config_table()
     if config_table == nil then
-        vim.api.nvim_err_writeln("Could not find rsync.toml")
+        if report_error == nil or report_error then
+            vim.api.nvim_err_writeln("Could not find rsync.toml")
+        end
         return
     end
 
