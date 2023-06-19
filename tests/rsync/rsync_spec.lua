@@ -27,14 +27,34 @@ describe("rsync", function()
             assert.equals(err, "")
         end)
 
-        it("RsyncProjectConfig", function()
+        it("RsyncProjectConfig show", function()
             helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"' })
             helpers.write_file("test.c", { "eueueu" })
             helpers.assert_file_not_copied("test.c")
 
-            local status, err = pcall(vim.cmd.RsyncProjectConfig)
+            local status, err = pcall(vim.cmd.RsyncProjectConfig, "show")
             assert.equals(status, true)
             assert.equals(err, "")
+        end)
+
+        it("RsyncProjectConfig reload", function()
+            require("rsync").setup({ sync_on_save = false })
+
+            local project = require("rsync.project")
+
+            -- create an initial rsync.toml with a path
+            helpers.write_file(".nvim/rsync.toml", { 'remote_path = "path1"' })
+            assert.equals(project.get_config_table().remote_path, "path1")
+
+            -- change the path, and reload the config
+            helpers.write_file(".nvim/rsync.toml", { 'remote_path = "path2"' })
+            local status, err = pcall(vim.cmd.RsyncProjectConfig, "reload")
+            assert.equals(status, true)
+            assert.equals(err, "")
+            assert.equals(project.get_config_table().remote_path, "path2")
+
+            -- restore defaults
+            require("rsync").setup({ sync_on_save = true })
         end)
     end)
 

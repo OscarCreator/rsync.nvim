@@ -60,9 +60,21 @@ vim.api.nvim_create_user_command("RsyncConfig", function()
     vim.print(config.values)
 end, {})
 
-vim.api.nvim_create_user_command("RsyncProjectConfig", function()
-    vim.print(project.get_config_table())
-end, {})
+vim.api.nvim_create_user_command("RsyncProjectConfig", function(opts)
+    local cmd = opts.fargs[1]
+    if cmd == nil or cmd == "show" then
+        vim.print(project.get_config_table())
+    elseif cmd == "reload" then
+        project.reload_config()
+    else
+        log.error(string.format("Unknown subcommand: '%s'", cmd))
+    end
+end, {
+    nargs = 1,
+    complete = function(ArgLead, CmdLine, CursorPos)
+        return { "show", "reload" }
+    end,
+})
 
 --- get current sync status of project
 M.status = function()
