@@ -99,7 +99,7 @@ function M.setup(user_config)
         vim.api.nvim_create_autocmd({ "User" }, {
             pattern = "FugitiveChanged",
             callback = function()
-                sync.sync_up()
+                sync.sync_up(false)
             end,
             group = rsync_nvim,
         })
