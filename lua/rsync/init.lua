@@ -79,9 +79,9 @@ M.status = function()
         return "Syncing up files"
     elseif state == ProjectSyncStates.DONE then
         if code == 0 then
-            return "Up to date"
+            return "Sync succeeded"
         else
-            return "Failed to sync"
+            return "Sync failed"
         end
     end
 end
