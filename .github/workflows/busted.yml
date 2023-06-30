@@ -33,7 +33,7 @@ jobs:
           repository: nvim-lua/plenary.nvim
           path: plenary.nvim
       - name: install luacov
-        if: ${{ matix.is_unix }}
+        if: ${{ matrix.is_unix }}
         run: |
           sudo apt install luarocks
           sudo luarocks install luacov
