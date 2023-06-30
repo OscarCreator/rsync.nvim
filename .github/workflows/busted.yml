@@ -7,8 +7,16 @@ on:
 
 jobs:
   busted:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: macos-latest
+            is_mac: 1
+          - os: ubuntu-latest
+            is_unix: 1
     name: busted
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps: 
       - name: checkout
         uses: actions/checkout@v3
@@ -25,6 +33,7 @@ jobs:
           repository: nvim-lua/plenary.nvim
           path: plenary.nvim
       - name: install luacov
+        if: ${{ matix.is_unix }}
         run: |
           sudo apt install luarocks
           sudo luarocks install luacov
@@ -36,8 +45,13 @@ jobs:
           neovim: true
           version: nightly
       - name: run test
+        if: ${{ matrix.is_unix }}
         run: NOCLEAN=1 make testcov
+      - name: run on macos
+        if: ${{ matrix.is_mac }}
+        run: make test
       - name: upload coverage report
+        if: ${{ matrix.is_unix }}
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
