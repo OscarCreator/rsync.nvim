@@ -16,7 +16,7 @@ Asynchronously transfer your files with `rsync` on save.
 use {
     'OscarCreator/rsync.nvim',
     run = 'make',
-    requires = {'nvim-lua/plenary.nvim'}
+    requires = {'nvim-lua/plenary.nvim'},
     config = function()
         require("rsync").setup({
             -- triggers sync when git repo was changed
