@@ -24,6 +24,8 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: restore cache
         uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: v0-rust-${{ matrix.os }}
       - name: build rsync
         run: |
           make build
