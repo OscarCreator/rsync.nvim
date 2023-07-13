@@ -59,8 +59,8 @@ testcov-html:
 .PHONY: test-clean
 test-clean:
 	@rm -rf luacov*
-	@rm -rf lua/deps
-	@rm lua/rsync_nvim.so
 
 .PHONY: clean
 clean: test-clean
+	@rm -rf lua/deps
+	@rm lua/rsync_nvim.so
