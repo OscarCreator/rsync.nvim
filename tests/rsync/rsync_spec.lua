@@ -365,6 +365,16 @@ describe("rsync", function()
                 helpers.assert_file_not_copied("second_test.tt")
             end)
         end)
+
+        it("on RsyncUpFile with filepath", function()
+            setup_with_gitignore(function()
+                helpers.write_file("second_test.tt", { "labbal" })
+                vim.cmd.e("second_test.tt")
+                vim.cmd.RsyncUpFile("test.c")
+                helpers.wait_sync_file()
+                helpers.assert_file_not_copied("second_test.tt")
+            end)
+        end)
     end)
 
     local function setup_with_remote_includes(config)
@@ -459,6 +469,48 @@ describe("rsync", function()
 
             local lines = vim.api.nvim_buf_get_lines(buf, 0, 2, false)
             assert(vim.deep_equal(lines, remote_text), "found:" .. vim.inspect(lines))
+        end)
+
+        it("synced with RsyncDownFile file", function()
+            setup_with_remote_includes({
+                'remote_path = "' .. helpers.dest .. '/"',
+                'remote_includes = ["remote_file.h"]',
+            })
+            helpers.write_remote_file("remote_file.h", { "this file should be able to sync down" })
+            helpers.write_remote_file("remote_file_2.h", { "this file should also be able to sync down" })
+            helpers.assert_on_remote_only("remote_file.h")
+            helpers.assert_on_remote_only("remote_file_2.h")
+
+            -- sync down file
+            vim.cmd.RsyncDown()
+            helpers.wait_sync()
+
+            -- edit remote file
+            local remote_text = { "some other content", "which is replaced" }
+            local remote_text_2 = { "some other content in second file", "which is replaced" }
+            helpers.write_remote_file("remote_file.h", remote_text)
+            helpers.write_remote_file("remote_file_2.h", remote_text_2)
+
+            vim.cmd.e("remote_file.h")
+            vim.cmd.RsyncDownFile("remote_file_2.h")
+            -- Rsync Up/Down File is aborted
+            local status, err = pcall(vim.cmd.RsyncUpFile)
+            assert.equals(status, false)
+            assert.equals(err, "Vim:File still syncing down")
+            local status, err = pcall(vim.cmd.RsyncDownFile)
+            assert.equals(status, false)
+            assert.equals(err, "Vim:File still syncing down")
+
+            -- open another file just to check that buffer
+            -- is update even if it not is the current.
+            vim.cmd.e("test.c")
+            -- this should update buffer after sync is done
+            helpers.wait_sync_file()
+
+            vim.cmd.e("remote_file_2.h")
+            local buf = vim.api.nvim_get_current_buf()
+            local lines = vim.api.nvim_buf_get_lines(buf, 0, 2, false)
+            assert(vim.deep_equal(lines, remote_text_2), "found:" .. vim.inspect(lines))
         end)
 
         it("synced with RsyncDown", function()
