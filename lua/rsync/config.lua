@@ -2,9 +2,10 @@ local config = {}
 config.values = {
     fugitive_sync = false,
     sync_on_save = true,
+    reload_file_after_sync = true,
     project_config_path = ".nvim/rsync.toml",
     on_exit = function(code, command) end,
-    on_stderr = function(data, command) end,
+    on_stderr = function(output, command) end,
 }
 
 function config.set_defaults(user_defaults)

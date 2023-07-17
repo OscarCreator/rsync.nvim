@@ -276,9 +276,11 @@ function sync.sync_down_file(filename)
                 _RsyncProjectConfigs[project_config.project_path].status.file.state = FileSyncStates.DONE
                 _RsyncProjectConfigs[project_config.project_path].status.file.job_id = -1
                 _RsyncProjectConfigs[project_config.project_path].status.file.code = code
-                vim.api.nvim_buf_call(buf, function()
-                    vim.cmd.e()
-                end)
+                if config.values.reload_file_after_sync then
+                    vim.api.nvim_buf_call(buf, function()
+                        vim.cmd.e()
+                    end)
+                end
             end)
         end)
     end)
