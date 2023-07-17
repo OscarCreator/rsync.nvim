@@ -7,10 +7,59 @@ This plugin leverages the power of rsync to sync your entire project
 on save. So if you have a remote evironment but want to use you local
 tools to edit files then this is the perfect plugin for you!
 
+                                                        *rsync.setup()*
+rsync.setup({opts})
+    Setup function to be run at startup. The following plugin options
+    are available for {opts}:
+
+                                                   *rsync.fugitive_sync*
+    fugitive_sync:
+        Calls |:RsyncUp| when fugitive calls |FugitiveChanged| indicating
+        that the repo might have changed and should be synced. 
+
+        Default: false
+
+                                                    *rsync.sync_on_save*
+    sync_on_save:
+        Calls |:RsyncUp| when a file is save and is part of the project.
+
+        Default: true
+
+                                          *rsync.reload_file_after_sync*
+    reload_file_after_sync:
+        Wether to call |:e| when |:RsyncDownFile| succeeded.
+
+        Default: true
+
+                                             *rsync.project_config_path*
+    project_config_path:
+        Path to the |rsync-config| file.
+
+        Default: `.nvim/rsync.toml`
+
+                                                         *rsync.on_exit*
+    on_exit:
+        Callback function called by any of the jobs invoked with
+        |jobstart()| by |rsync.nvim| which calls the |on_exit| handler. This
+        takes in a `function(code, command)` where `code` is the exit code
+        from |on_exit| and `command` is the command which |rsync.nvim| passed
+        to |jobstart()|.
+
+        Default: `nil`
+
+                                                       *rsync.on_stderr*
+    on_stderr:
+        Callback function called by any of the jobs invoked with
+        |jobstart()| by |rsync.nvim| which calls the |on_stderr| handler.
+        This takes in a `function(output, command)` where `output` is
+        |on_stderr|s `output` and `command` is the command which |rsync.nvim
+        passed to |jobstart()|.
+
+        Default: `nil`
+        
                                                           *rsync-config*
 |rsync.nvim| looks for `.nvim/rsync.toml` file by default in the root of
-your project. The path can also be set with the `project_config_path`
-key in the plugin configuration.
+your project. This path can be changed with |rsync.project_config_path|.
 The configuration options valid are:
 
 - remote_path
@@ -28,20 +77,25 @@ The configuration options valid are:
                                                               *:RsyncUp*
 :RsyncUp
     Sync's current project to the remote.
+
                                                           *:RsyncUpFile*
 :RsyncUpFile {file}
     Sync's {file} or current file to the remote.
     This works for all files, even if file is part of the .gitignore
+
                                                             *:RsyncDown*
 :RsyncDown
     Sync's current project from remote to the local path.
+
                                                         *:RsyncDownFile*
 :RsyncDownFile {file}
     Sync's {file} or current file from the remote.
     This will also refresh the buffer after the sync is done.
+
                                                              *:RsyncLog*
 :RsyncLog
     Open cached log for rsync.nvim.
+
                                                           *:RsyncConfig*
 :RsyncConfig
     Print out user config. If result is needed in lua then use:
@@ -58,6 +112,7 @@ The configuration options valid are:
 
 ==============================================================================
 3. Functions                                            *rsync-function*
+
 
 
                                                         *rsync.config()*
