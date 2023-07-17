@@ -29,15 +29,15 @@ The configuration options valid are:
 :RsyncUp
     Sync's current project to the remote.
                                                           *:RsyncUpFile*
-:RsyncUpFile
-    Sync's current file to the remote.
+:RsyncUpFile {file}
+    Sync's {file} or current file to the remote.
     This works for all files, even if file is part of the .gitignore
                                                             *:RsyncDown*
 :RsyncDown
     Sync's current project from remote to the local path.
                                                         *:RsyncDownFile*
-:RsyncDownFile
-    Sync's current file from the remote.
+:RsyncDownFile {file}
+    Sync's {file} or current file from the remote.
     This will also refresh the buffer after the sync is done.
                                                              *:RsyncLog*
 :RsyncLog

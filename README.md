@@ -18,10 +18,7 @@ use {
     run = 'make',
     requires = {'nvim-lua/plenary.nvim'},
     config = function()
-        require("rsync").setup({
-            -- triggers sync when git repo was changed
-            fugitive_sync = true
-        })
+        require("rsync").setup()
     end
 }
 ```
@@ -52,9 +49,9 @@ remote_includes = ["build.log", "build/generated.json"]
 Name               | Action
 -------------------|-------
 RsyncDown          | Sync all files from remote* to local folder.
-RsyncDownFile      | Sync current file from remote to local folder.
+RsyncDownFile      | Sync specified or current file from remote to local folder.
 RsyncUp            | Sync all files from local* to remote folder.
-RsyncUpFile        | Sync current file from local to remote. This requires rsync version >= 3.2.3
+RsyncUpFile        | Sync specified or current file from local to remote. This requires rsync version >= 3.2.3
 RsyncLog           | Open log file for rsync.nvim.
 RsyncConfig        | Print out user config.
 RsyncProjectConfig | Print out current project config.
