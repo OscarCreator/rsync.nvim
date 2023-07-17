@@ -39,21 +39,21 @@ rsync.setup({opts})
 
                                                          *rsync.on_exit*
     on_exit:
-        Callback function by any of the jobs invoked with |jobstart()|
-        by |rsync.nvim| and calls the |on_exit| handler. This takes in a
-        `function(code, command)` where `code` is the exit code from
-        |on_exit| and `command` is the command which |rsync.nvim| passed to
-        |jobstart()|.
+        Callback function called by any of the jobs invoked with
+        |jobstart()| by |rsync.nvim| which calls the |on_exit| handler. This
+        takes in a `function(code, command)` where `code` is the exit code
+        from |on_exit| and `command` is the command which |rsync.nvim| passed
+        to |jobstart()|.
 
         Default: `nil`
 
                                                        *rsync.on_stderr*
     on_stderr:
-        Callback function by any of the jobs invoked with |jobstart()|
-        by |rsync.nvim| and calls the |on_stderr| handler. This takes in a
-        `function(output, command)` where `output` is |on_stderr|s `output`
-        and `command` is the command which |rsync.nvim| passed to
-        |jobstart()|.
+        Callback function called by any of the jobs invoked with
+        |jobstart()| by |rsync.nvim| which calls the |on_stderr| handler.
+        This takes in a `function(output, command)` where `output` is
+        |on_stderr|s `output` and `command` is the command which |rsync.nvim
+        passed to |jobstart()|.
 
         Default: `nil`
         
