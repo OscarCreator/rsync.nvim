@@ -70,6 +70,34 @@ vim.api.nvim_create_user_command("RsyncProjectConfig", function()
     print(vim.inspect(project.get_config_table()))
 end, {})
 
+vim.api.nvim_create_user_command("RsyncCancelJob", function(opts)
+    local to_stop = opts.fargs[1] or "all"
+    if to_stop == "file" or to_stop == "all" then
+        project:run(function(config_table)
+            vim.fn.jobstop(config_table.status.file.job_id)
+        end)
+    end
+    if to_stop == "project" or to_stop == "all" then
+        project:run(function(config_table)
+            vim.fn.jobstop(config_table.status.project.job_id)
+        end)
+    end
+end, {
+    nargs = "?",
+    complete = function(ArgLead, _, _)
+        local options = { "file", "project", "all" }
+        local res = {}
+
+        -- return matching arguments only
+        for _, v in pairs(options) do
+            if string.match(v, ArgLead) then
+                table.insert(res, v)
+            end
+        end
+        return res
+    end,
+})
+
 --- get current sync status of project
 M.status = function()
     local config_table = project.get_config_table()
@@ -83,6 +111,8 @@ M.status = function()
         return "Syncing down files"
     elseif state == ProjectSyncStates.SYNC_UP then
         return "Syncing up files"
+    elseif state == ProjectSyncStates.STOPPED then
+        return "Sync cancelled"
     elseif state == ProjectSyncStates.DONE then
         if code == 0 then
             return "Sync succeeded"

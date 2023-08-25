@@ -112,6 +112,11 @@ function sync.sync_up(report_error)
         end, function(code)
             -- ignore stopped job. (SIGTERM or SIGKILL)
             if code == 143 or code == 137 then
+                project:run(function(project_config)
+                    _RsyncProjectConfigs[project_config.project_path].status.project.state = ProjectSyncStates.STOPPED
+                    _RsyncProjectConfigs[project_config.project_path].status.project.code = code
+                    _RsyncProjectConfigs[project_config.project_path].status.project.job_id = -1
+                end)
                 return
             end
             if code ~= 0 then
@@ -225,6 +230,11 @@ function sync.sync_down()
         end, function(code)
             -- ignore stopped job.
             if code == 143 or code == 137 then
+                project:run(function(project_config)
+                    _RsyncProjectConfigs[project_config.project_path].status.project.state = ProjectSyncStates.STOPPED
+                    _RsyncProjectConfigs[project_config.project_path].status.project.code = code
+                    _RsyncProjectConfigs[project_config.project_path].status.project.job_id = -1
+                end)
                 return
             end
             if code ~= 0 then
