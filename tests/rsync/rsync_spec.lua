@@ -614,5 +614,21 @@ describe("rsync", function()
 
             helpers.assert_files({ "test.c", "remote_file.h", "remote_file_2" })
         end)
+
+        it("synced with RsyncDown cancelled", function()
+            setup_with_remote_includes({
+                'remote_path = "' .. helpers.dest .. '/"',
+                'remote_includes = ["remote_file.h", "remote_file_2"]',
+            })
+            helpers.write_remote_file("remote_file.h", { "this file should be able to sync down" })
+            helpers.assert_on_remote_only("remote_file.h")
+
+            vim.cmd.RsyncDown()
+            vim.cmd.RsyncCancelJob()
+            helpers.wait_sync()
+
+            helpers.assert_on_remote_only("remote_file.h")
+            assert.equals(require("rsync").status(), "Sync cancelled")
+        end)
     end)
 end)
