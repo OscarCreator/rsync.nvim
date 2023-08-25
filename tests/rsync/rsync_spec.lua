@@ -21,6 +21,12 @@ describe("rsync", function()
             assert.equals(file_name, "rsync.log")
         end)
 
+        it("RsyncCancelJob", function()
+            local status, err = pcall(vim.cmd.RsyncCancelJob)
+            assert.equals(status, false)
+            assert.equals(err, "Vim:Could not find rsync.toml")
+        end)
+
         it("RsyncConfig", function()
             local status, err = pcall(vim.cmd.RsyncConfig)
             assert.equals(status, true)
@@ -78,9 +84,57 @@ describe("rsync", function()
 
             -- restore default
             require("rsync").setup({ sync_on_save = true })
+
+            it("on RsyncCancelJob all", function()
+                setup(function()
+                    vim.cmd.w()
+                    assert.equals(require("rsync").status(), "Syncing up files")
+                    vim.cmd.RsyncCancelJob("all")
+                    helpers.wait_sync()
+                    assert.equals(require("rsync").status(), "Sync cancelled")
+                end)
+            end)
+
+            it("on RsyncCancelJob file", function()
+                setup(function()
+                    vim.cmd.RsyncUpFile()
+                    vim.cmd.RsyncCancelJob("file")
+                    helpers.wait_sync_file()
+                    helpers.assert_file_not_copied("test.c")
+                end)
+            end)
+
+            it("on RsyncCancelJob project", function()
+                setup(function()
+                    vim.cmd.w()
+                    vim.cmd.RsyncCancelJob("project")
+                    helpers.wait_sync()
+                    helpers.assert_file_not_copied("test.c")
+                end)
+            end)
         end)
 
         describe("copied", function()
+            it("on RsyncCancelJob file not cancelling project sync", function()
+                setup(function()
+                    vim.cmd.w()
+                    assert.equals(require("rsync").status(), "Syncing up files")
+                    vim.cmd.RsyncCancelJob("file")
+                    helpers.wait_sync()
+                    assert.equals(require("rsync").status(), "Sync succeeded")
+                    helpers.assert_file("test.c")
+                end)
+            end)
+
+            it("on RsyncCancelJob project not cancelling file sync", function()
+                setup(function()
+                    vim.cmd.RsyncUpFile()
+                    vim.cmd.RsyncCancelJob("project")
+                    helpers.wait_sync_file()
+                    helpers.assert_file("test.c")
+                end)
+            end)
+
             it("on save", function()
                 setup(function()
                     -- this triggers autocommand
@@ -559,6 +613,22 @@ describe("rsync", function()
             helpers.wait_sync()
 
             helpers.assert_files({ "test.c", "remote_file.h", "remote_file_2" })
+        end)
+
+        it("synced with RsyncDown cancelled", function()
+            setup_with_remote_includes({
+                'remote_path = "' .. helpers.dest .. '/"',
+                'remote_includes = ["remote_file.h", "remote_file_2"]',
+            })
+            helpers.write_remote_file("remote_file.h", { "this file should be able to sync down" })
+            helpers.assert_on_remote_only("remote_file.h")
+
+            vim.cmd.RsyncDown()
+            vim.cmd.RsyncCancelJob()
+            helpers.wait_sync()
+
+            helpers.assert_on_remote_only("remote_file.h")
+            assert.equals(require("rsync").status(), "Sync cancelled")
         end)
     end)
 end)
