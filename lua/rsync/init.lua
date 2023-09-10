@@ -31,6 +31,26 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
     group = rsync_nvim,
 })
 
+-- change sync_on_save
+vim.api.nvim_create_user_command("RsyncSaveSync", function(opts)
+    local cmd = opts.fargs[1]
+
+    if cmd == "disable" then
+        config.values.sync_on_save = false
+    elseif cmd == "toggle" then
+        config.values.sync_on_save = not config.values.sync_on_save
+    elseif cmd == "enable" then
+        config.values.sync_on_save = true
+    else
+        vim.api.nvim_err_writeln(string.format("Unknown subcommand: '%s'", cmd))
+    end
+end, {
+    nargs = 1,
+    complete = function(ArgLead, CmdLine, CursorPos)
+        return { "disable", "toggle", "enable" }
+    end,
+})
+
 -- sync all files from remote
 vim.api.nvim_create_user_command("RsyncDown", function()
     sync.sync_down()

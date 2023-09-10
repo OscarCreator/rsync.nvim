@@ -182,6 +182,40 @@ describe("rsync", function()
                 end)
             end)
 
+            it("on save after toggling RsyncSaveSync", function()
+                setup(function()
+                    -- this triggers autocommand
+                    local status, err = pcall(vim.cmd.RsyncSaveSync)
+                    assert.equals(status, false)
+                    assert.equals(err, "Wrong number of arguments")
+
+                    status, err = pcall(vim.cmd.RsyncSaveSync, "disable")
+                    assert.equals(status, true)
+                    vim.cmd.w()
+                    helpers.wait_sync()
+                    helpers.assert_file_not_copied("test.c")
+
+                    status, err = pcall(vim.cmd.RsyncSaveSync, "enable")
+                    assert.equals(status, true)
+                    vim.cmd.w()
+                    helpers.wait_sync()
+                    helpers.assert_file("test.c")
+
+                    helpers.write_file("test2.d", { "12345" })
+                    status, err = pcall(vim.cmd.RsyncSaveSync, "toggle")
+                    assert.equals(status, true)
+                    vim.cmd.w()
+                    helpers.wait_sync()
+                    helpers.assert_file_not_copied("test2.d")
+
+                    status, err = pcall(vim.cmd.RsyncSaveSync, "toggle")
+                    assert.equals(status, true)
+                    vim.cmd.w()
+                    helpers.wait_sync()
+                    helpers.assert_file("test2.d")
+                end)
+            end)
+
             it("reschedule save", function()
                 setup(function()
                     -- this triggers autocommand
