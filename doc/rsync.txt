@@ -115,6 +115,16 @@ The configuration options valid are:
         require("rsync.project").get_config_table()
 <
 
+:RsyncSaveSync [cmd]                                    *:RsyncSaveSync*
+    Change if saving should sync to remote. This function temporarily
+    edits |rsync.sync_on_save| depending on subcommand. Available
+    commands are:
+
+    disable  disables sync when saving
+    enable   enables sync when saving
+    toggle   toggles flag
+
+
 ==============================================================================
 3. Functions                                            *rsync-function*
 

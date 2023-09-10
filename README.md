@@ -55,6 +55,7 @@ RsyncUpFile        | Sync specified or current file from local to remote. This r
 RsyncLog           | Open log file for rsync.nvim.
 RsyncConfig        | Print out user config.
 RsyncProjectConfig | Print or reload current project config.
+RsyncSaveSync      | Temporarily disable/enable/toggle sync when saving.
 
 *: Files which are excluded are, everything in .gitignore and .nvim folder.
 
