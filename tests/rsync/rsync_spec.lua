@@ -42,6 +42,42 @@ describe("rsync", function()
             assert.equals(status, true)
             assert.equals(err, "")
         end)
+
+        it("RsyncProjectConfig reload", function()
+            local project = require("rsync.project")
+
+            -- create an initial rsync.toml with a path
+            helpers.write_file(".nvim/rsync.toml", { 'remote_path = "path1"' })
+            assert.equals(project.get_config_table().remote_path, "path1")
+
+            -- change the path, and reload the config
+            helpers.write_file(".nvim/rsync.toml", { 'remote_path = "path2"' })
+            local status, err = pcall(vim.cmd.RsyncProjectConfig, "reload")
+            assert.equals(status, true)
+            assert.equals(err, "")
+            assert.equals(project.get_config_table().remote_path, "path2")
+        end)
+
+        it("RsyncProjectConfig delete", function()
+            local project = require("rsync.project")
+
+            -- create an initial rsync.toml with a path
+            helpers.write_file(".nvim/rsync.toml", { 'remote_path = "path1"' })
+            assert.equals(project.get_config_table().remote_path, "path1")
+
+            -- delete config and reload the config
+            helpers.delete_file(".nvim/rsync.toml")
+            local status, err = pcall(vim.cmd.RsyncProjectConfig, "reload")
+            assert.equals(status, false)
+            assert.equals(err, "Vim:Could not find rsync.toml")
+            assert.equals(project.get_config_table(), nil)
+        end)
+
+        it("RsyncProjectConfig unknown subcommand", function()
+            local status, err = pcall(vim.cmd.RsyncProjectConfig, "eueu")
+            assert.equals(status, false)
+            assert.equals(err, "Vim:Unknown subcommand: 'eueu'")
+        end)
     end)
 
     describe("missing rsync.toml", function()

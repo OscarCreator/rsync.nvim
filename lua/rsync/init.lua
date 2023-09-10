@@ -66,9 +66,21 @@ vim.api.nvim_create_user_command("RsyncConfig", function()
     print(vim.inspect(config.values))
 end, {})
 
-vim.api.nvim_create_user_command("RsyncProjectConfig", function()
-    print(vim.inspect(project.get_config_table()))
-end, {})
+vim.api.nvim_create_user_command("RsyncProjectConfig", function(opts)
+    local cmd = opts.fargs[1] or "show"
+    if cmd == "show" then
+        print(vim.inspect(project.get_config_table()))
+    elseif cmd == "reload" then
+        project.reload_config()
+    else
+        vim.api.nvim_err_writeln(string.format("Unknown subcommand: '%s'", cmd))
+    end
+end, {
+    nargs = "?",
+    complete = function(ArgLead, CmdLine, CursorPos)
+        return { "show", "reload" }
+    end,
+})
 
 vim.api.nvim_create_user_command("RsyncCancelJob", function(opts)
     local to_stop = opts.fargs[1] or "all"

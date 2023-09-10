@@ -103,11 +103,16 @@ The configuration options valid are:
         require("rsync.config").values
 <
                                                    *:RsyncProjectConfig*
-:RsyncProjectConfig
-    Print out current project config. If table is needed to extend this
-    plugin then use:
+:RsyncProjectConfig [cmd]
+    Print out current project config or reload config. Available
+    commands are:
+
+    reload  reload the project config from file
+    show    print current project config
+
+    If table is needed to extend this plugin then use:
 >lua
-        require("rsync.project").get_project_config()
+        require("rsync.project").get_config_table()
 <
 
 ==============================================================================

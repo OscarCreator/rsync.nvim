@@ -83,6 +83,19 @@ function project.get_config_table()
     end
 end
 
+--- Reload project config
+function project.reload_config()
+    local config_file_path = get_config_file()
+    if config_file_path == nil then
+        vim.api.nvim_err_writeln("Could not find rsync.toml")
+        return
+    end
+    local project_path = get_project_path(config_file_path)
+    -- reload
+    _RsyncProjectConfigs[project_path] = nil
+    project.get_config_table()
+end
+
 --- Run passed function if project config is found
 --- @param fn function fuction to call if config is found
 function project:run(fn, report_error)
