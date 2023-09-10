@@ -78,6 +78,12 @@ describe("rsync", function()
             assert.equals(status, false)
             assert.equals(err, "Vim:Unknown subcommand: 'eueu'")
         end)
+
+        it("RsyncSaveSync unknown subcommand", function()
+            local status, err = pcall(vim.cmd.RsyncSaveSync, "eueu")
+            assert.equals(status, false)
+            assert.equals(err, "Vim:Unknown subcommand: 'eueu'")
+        end)
     end)
 
     describe("missing rsync.toml", function()
