@@ -88,7 +88,6 @@ function project.reload_config()
     local config_file_path = get_config_file()
     if config_file_path == nil then
         vim.api.nvim_err_writeln("Could not find rsync.toml")
-        return
     end
     local project_path = get_project_path(config_file_path)
     -- reload
