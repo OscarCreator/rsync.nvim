@@ -37,11 +37,16 @@ remote_path = "../copy/"
 # or if using ssh
 remote_path = "user@host:/home/user/path/"
 
-# specifying a file(s) which should be synced "down" but are on .gitignore.
-# this is a workaround to sync down files which are included on .gitignore
+# specifying a file(s) which should be synced "down" but are on ignore files.
+# this is a workaround to sync down files which are included on ignore files.
 remote_includes = "build.log"
 # or using an array if multiple files are needed.
 remote_includes = ["build.log", "build/generated.json"]
+
+# specifying an gitignore file(s). Files matching patterns in ignore files are
+# excluded from "SyncUp" and "SyncDown" except ones specified in `remote_includes`.
+# For example, to exclude file(s) in the global gitignore and the project gitignore:
+ignorefile_paths = ["~/.gitignore", ".gitignore"]
 ```
 
 ## Commands
