@@ -105,7 +105,7 @@ function sync.sync_up(report_error)
 
             vim.fn.jobstop(current_status.job_id)
         end
-        local command = compose_sync_up_command(config_table.project_path, config_table.remote_path, config_table.ignorefile_paths or {".gitignore"})
+        local command = compose_sync_up_command(config_table.project_path, config_table.remote_path, config_table.ignorefile_paths)
         safe_sync(command, function(res)
             project:run(function(project_config)
                 _RsyncProjectConfigs[project_config.project_path].status.project.state = ProjectSyncStates.SYNC_UP
@@ -224,7 +224,7 @@ function sync.sync_down()
             vim.fn.jobstop(current_status.job_id)
         end
         local command =
-            compose_sync_down_command(config_table.remote_includes, config_table.project_path, config_table.remote_path, config_table.ignorefile_paths or {".gitignore"})
+            compose_sync_down_command(config_table.remote_includes, config_table.project_path, config_table.remote_path, config_table.ignorefile_paths)
         safe_sync(command, function(res)
             project:run(function(project_config)
                 _RsyncProjectConfigs[project_config.project_path].status.project.state = ProjectSyncStates.SYNC_DOWN

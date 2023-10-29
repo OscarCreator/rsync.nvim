@@ -78,6 +78,9 @@ function project.get_config_table()
                 job_id = -1,
             },
         }
+
+        -- use the default value if ignorefile_paths is not specified in project config
+        table.ignorefile_paths = table.ignorefile_paths or {".gitignore"}
         _RsyncProjectConfigs[project_path] = table
         return table
     end

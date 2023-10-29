@@ -555,19 +555,30 @@ describe("rsync", function()
             helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"' })
 
             -- .gitignore at project root is read by default
-            helpers.write_file(".gitignore", { "should_ignore_1.txt" })
-            helpers.write_file("should_ignore_1.txt", { "this file\nshould not be synced" })
-            helpers.assert_file_not_copied("should_ignore_1.txt")
+            helpers.write_file(".gitignore", { "local_should_ignore.txt", "remote_should_ignore.txt" })
+            helpers.write_file("local_should_ignore.txt", { "this file\nshould not be synced" })
+            helpers.mkdir_remote("")
+            helpers.write_remote_file("remote_should_ignore.txt", { "this file\nshould not be synced" })
+            helpers.assert_file_not_copied("local_should_ignore.txt")
+            helpers.assert_on_remote_only("remote_should_ignore.txt")
 
             code()
         end
 
         it("on RsyncUp (default ignore file)", function()
-            setup_with_multiple_ignore_files(function()
+            setup_with_default_ignore_files(function()
+                vim.cmd.RsyncUp()
+                helpers.wait_sync()
+
+                helpers.assert_file_not_copied("local_should_ignore.txt")
+            end)
+        end)
+        it("on RsyncDown (default ignore file)", function()
+            setup_with_default_ignore_files(function()
                 vim.cmd.RsyncDown()
                 helpers.wait_sync()
 
-                helpers.assert_file_not_copied("should_ignore_1.txt")
+                helpers.assert_on_remote_only("remote_should_ignore.txt")
             end)
         end)
 
@@ -575,32 +586,32 @@ describe("rsync", function()
             -- ignorefile_paths is explicitly set to none
             helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"', 'ignorefile_paths = []' })
 
-            -- this ignore file is not be honored
-            helpers.write_file(".gitignore", { "local_should_sync.txt" })
+            -- this ignore file is not honored
+            helpers.write_file(".gitignore", { "local_should_sync.txt", "remote_should_sync.txt" })
             helpers.write_file("local_should_sync.txt", { "this file\nshould be synced" })
             helpers.mkdir_remote("")
-            helpers.write_remote__file("remote_should_sync.txt", { "this file\nshould be synced" })
+            helpers.write_remote_file("remote_should_sync.txt", { "this file\nshould be synced" })
 
             helpers.assert_file_not_copied("local_should_sync.txt")
-            helpers.assert_on_remote_only("local_should_sync.txt")
+            helpers.assert_on_remote_only("remote_should_sync.txt")
 
             code()
 
-            helpers.assert_file("local_should_sync.txt")
-            helpers.assert_file("remote_should_sync.txt")
         end
 
         it("on RsyncUp (explicitly none ignore files)", function()
-            setup_with_multiple_ignore_files(function()
+            setup_with_no_ignore_files(function()
                 vim.cmd.RsyncUp()
                 helpers.wait_sync()
+                helpers.assert_file("local_should_sync.txt")
             end)
         end)
 
         it("on RsyncDown (explicitly none ignore files)", function()
-            setup_with_multiple_ignore_files(function()
+            setup_with_no_ignore_files(function()
                 vim.cmd.RsyncDown()
                 helpers.wait_sync()
+                helpers.assert_file("remote_should_sync.txt")
             end)
         end)
     end)
