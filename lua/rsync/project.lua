@@ -80,7 +80,7 @@ function project.get_config_table()
         }
 
         -- use the default value if ignorefile_paths is not specified in project config
-        table.ignorefile_paths = table.ignorefile_paths or {".gitignore"}
+        table.ignorefile_paths = table.ignorefile_paths or { ".gitignore" }
         _RsyncProjectConfigs[project_path] = table
         return table
     end
