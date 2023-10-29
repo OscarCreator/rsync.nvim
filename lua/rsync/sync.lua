@@ -58,18 +58,20 @@ local function safe_sync(command, on_start, on_exit)
     end
 end
 
---- creates filters from .gitignore file
-local function create_filters(path)
-    local f = io.open(".gitignore", "r")
-
+local function create_filters(filter_paths)
     local include = " "
     local exclude = " "
-    if f ~= nil then
-        for line in f:lines() do
-            if line:sub(1, 1) == "!" then
-                include = include .. "--include='" .. line:sub(2, -1) .. "' "
-            else
-                exclude = exclude .. "--exclude='" .. line .. "' "
+    for _, p in ipairs(filter_paths) do
+        p = vim.fn.expand(p)
+        local f = io.open(p, "r")
+
+        if f ~= nil then
+            for line in f:lines() do
+                if line:sub(1, 1) == "!" then
+                    include = include .. "--include='" .. line:sub(2, -1) .. "' "
+                else
+                    exclude = exclude .. "--exclude='" .. line .. "' "
+                end
             end
         end
     end
@@ -79,13 +81,13 @@ end
 --- Creates valid rsync command to sync up
 --- @param project_path string the path to project
 --- @param destination_path string the destination path which files will be synced to
+--- @param ignorefile_paths table the paths to ignore files
 --- @return string #valid rsync command
-local function compose_sync_up_command(project_path, destination_path)
-    -- TODO change depending on plugin options
+local function compose_sync_up_command(project_path, destination_path, ignorefile_paths)
     -- TODO have command be a separate type
 
-    -- read .gitignore append lines without ! with --include
-    local include, exclude = create_filters(".gitignore")
+    -- read ignore files append lines without ! with --include
+    local include, exclude = create_filters(ignorefile_paths)
 
     return "rsync -varz --delete" .. include .. exclude .. "-f'- .nvim' " .. project_path .. " " .. destination_path
 end
@@ -103,7 +105,7 @@ function sync.sync_up(report_error)
 
             vim.fn.jobstop(current_status.job_id)
         end
-        local command = compose_sync_up_command(config_table.project_path, config_table.remote_path)
+        local command = compose_sync_up_command(config_table.project_path, config_table.remote_path, config_table.ignorefile_paths or {".gitignore"})
         safe_sync(command, function(res)
             project:run(function(project_config)
                 _RsyncProjectConfigs[project_config.project_path].status.project.state = ProjectSyncStates.SYNC_UP
@@ -183,8 +185,9 @@ end
 --- @param remote_includes table|string file path's to sync down but are ignored
 --- @param project_path string the path to project
 --- @param destination_path string the destination path which files will be synced from
+--- @param ignorefile_paths table the paths to ignore files
 --- @return string #valid rsync command
-local function compose_sync_down_command(remote_includes, project_path, destination_path)
+local function compose_sync_down_command(remote_includes, project_path, destination_path, ignorefile_paths)
     local filters = ""
     if type(remote_includes) == "table" then
         local filter_template = "-f'+ %s' "
@@ -195,7 +198,7 @@ local function compose_sync_down_command(remote_includes, project_path, destinat
         filters = "-f'+ " .. remote_includes .. "' "
     end
 
-    local include, exclude = create_filters(".gitignore")
+    local include, exclude = create_filters(ignorefile_paths)
 
     local command = "rsync -varz "
         .. filters
@@ -221,7 +224,7 @@ function sync.sync_down()
             vim.fn.jobstop(current_status.job_id)
         end
         local command =
-            compose_sync_down_command(config_table.remote_includes, config_table.project_path, config_table.remote_path)
+            compose_sync_down_command(config_table.remote_includes, config_table.project_path, config_table.remote_path, config_table.ignorefile_paths or {".gitignore"})
         safe_sync(command, function(res)
             project:run(function(project_config)
                 _RsyncProjectConfigs[project_config.project_path].status.project.state = ProjectSyncStates.SYNC_DOWN
