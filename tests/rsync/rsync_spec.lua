@@ -507,7 +507,10 @@ describe("rsync", function()
         end)
 
         local function setup_with_multiple_ignore_files(code)
-            helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"', 'ignorefile_paths = [ ".gitignore.1", ".gitignore.2" ]' })
+            helpers.write_file(
+                ".nvim/rsync.toml",
+                { 'remote_path = "' .. helpers.dest .. '/"', 'ignorefile_paths = [ ".gitignore.1", ".gitignore.2" ]' }
+            )
             helpers.write_file(".gitignore.1", { "local_should_ignore_1.txt", "remote_should_ignore_1.txt" })
             helpers.write_file(".gitignore.2", { "local_should_ignore_2.txt", "remote_should_ignore_2.txt" })
             helpers.write_file("local_should_ignore_1.txt", { "this file\nshould not be synced" })
@@ -584,7 +587,10 @@ describe("rsync", function()
 
         local function setup_with_no_ignore_files(code)
             -- ignorefile_paths is explicitly set to none
-            helpers.write_file(".nvim/rsync.toml", { 'remote_path = "' .. helpers.dest .. '/"', 'ignorefile_paths = []' })
+            helpers.write_file(
+                ".nvim/rsync.toml",
+                { 'remote_path = "' .. helpers.dest .. '/"', "ignorefile_paths = []" }
+            )
 
             -- this ignore file is not honored
             helpers.write_file(".gitignore", { "local_should_sync.txt", "remote_should_sync.txt" })
@@ -596,7 +602,6 @@ describe("rsync", function()
             helpers.assert_on_remote_only("remote_should_sync.txt")
 
             code()
-
         end
 
         it("on RsyncUp (explicitly none ignore files)", function()
