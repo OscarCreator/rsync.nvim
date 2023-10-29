@@ -62,11 +62,14 @@ rsync.setup({opts})
 your project. This path can be changed with |rsync.project_config_path|.
 The configuration options valid are:
 
+- ignorefile_paths
+    Filepaths to .gitignore. Default to `[".gitignore"]` if unspecified.
+
 - remote_path
     Local/remote filepath.
 
 - remote_includes
-    Filepaths to files part of .gitignore but wanted to be included when
+    Filepaths to files part of ignore files but wanted to be included when
     syncing down with |:RsyncDown|.
 
 
