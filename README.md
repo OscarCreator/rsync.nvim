@@ -85,3 +85,7 @@ Global configuration settings with the default values
 }
 ```
 
+## Similar projects
+
+- [coffebar/transfer.nvim](https://github.com/coffebar/transfer.nvim)
+- [KenN7/vim-arsync](https://github.com/KenN7/vim-arsync)
