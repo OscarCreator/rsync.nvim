@@ -6,6 +6,7 @@
 local project = require("rsync.project")
 local log = require("rsync.log")
 local config = require("rsync.config")
+local path = require("plenary.path")
 
 FileSyncStates = {
     DONE = 0,
@@ -46,6 +47,8 @@ local function safe_sync(command, on_start, on_exit)
         end,
         stdout_buffered = true,
         stderr_buffered = true,
+        -- run from project root
+        cwd = project.get_config_table().project_path,
     })
 
     if res == -1 then
@@ -153,16 +156,14 @@ function sync.sync_up_file(filename)
         end
 
         -- TODO move to function
-        local full = vim.fn.expand("%:p")
         local name = vim.fn.expand("%:t")
-        local path = require("plenary.path")
 
-        local relative_path = path:new(full):make_relative(config_table["project_path"])
+        local relative_path = path:new(filename):make_relative(config_table["project_path"])
         local rpath_no_filename = string.sub(relative_path, 1, -(1 + string.len(name)))
 
         local command = "rsync -az --mkpath "
             .. config_table.project_path
-            .. filename
+            .. relative_path
             .. " "
             .. config_table.remote_path
             .. rpath_no_filename
@@ -264,7 +265,8 @@ end
 --- @param destination_path string the destination path which file will be synced from
 --- @return string #valid rsync command
 local function compose_sync_down_file_command(file_path, project_path, destination_path)
-    local command = "rsync -varz " .. destination_path .. file_path .. " " .. project_path .. file_path
+    local relative_path = path:new(file_path):make_relative(project_path)
+    local command = "rsync -varz " .. destination_path .. relative_path .. " " .. file_path
     return command
 end
 

@@ -270,6 +270,24 @@ describe("rsync", function()
                 end)
             end)
 
+            it("RsyncDownFile in sub-folder", function()
+                setup(function()
+                    helpers.mkdir("build")
+                    -- current active file
+                    helpers.write_file("build/aabb.txt", { "obobob12" })
+                    helpers.mkdir_remote("")
+                    helpers.mkdir_remote("build")
+                    helpers.write_remote_file("build/aabb.txt", { "121212" })
+
+                    -- change pwd to build folder
+                    vim.cmd.cd("build")
+                    vim.cmd.RsyncDownFile()
+
+                    helpers.wait_sync_file()
+                    helpers.assert_file("build/aabb.txt")
+                end)
+            end)
+
             it("RsyncUpFile is aborted", function()
                 setup(function()
                     vim.cmd.RsyncUpFile()
@@ -293,8 +311,10 @@ describe("rsync", function()
                     -- this is needed due to rsync will not create remote directories
                     -- if they do not exist
                     helpers.mkdir_remote("sub")
-
+                    -- make sure you don't have to be in project root
+                    vim.cmd.cd("sub")
                     vim.cmd.RsyncUpFile()
+
                     helpers.wait_sync_file()
                     helpers.assert_file("sub/second_test.tt")
                 end)
