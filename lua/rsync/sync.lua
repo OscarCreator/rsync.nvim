@@ -48,7 +48,7 @@ local function safe_sync(command, on_start, on_exit)
         stdout_buffered = true,
         stderr_buffered = true,
         -- run from project root
-        cwd = project.get_config_table().project_path
+        cwd = project.get_config_table().project_path,
     })
 
     if res == -1 then
