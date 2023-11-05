@@ -62,16 +62,16 @@ vim.api.nvim_create_user_command("RsyncUp", function()
 end, {})
 
 vim.api.nvim_create_user_command("RsyncDownFile", function(opts)
-    local file_relative = opts.fargs[1] or vim.fn.expand("%:.")
-    sync.sync_down_file(file_relative)
+    local file_path = opts.fargs[1] or vim.fn.expand("%:p")
+    sync.sync_down_file(file_path)
 end, {
     nargs = "?",
     complete = "file",
 })
 
 vim.api.nvim_create_user_command("RsyncUpFile", function(opts)
-    local file_relative = opts.fargs[1] or vim.fn.expand("%:.")
-    sync.sync_up_file(file_relative)
+    local file_path = opts.fargs[1] or vim.fn.expand("%:p")
+    sync.sync_up_file(file_path)
 end, {
     nargs = "?",
     complete = "file",
