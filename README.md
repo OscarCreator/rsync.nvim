@@ -1,6 +1,7 @@
 [![codecov](https://codecov.io/gh/OscarCreator/rsync.nvim/branch/master/graph/badge.svg?token=GYELY6KJZ6)](https://codecov.io/gh/OscarCreator/rsync.nvim)
 
 # rsync.nvim
+
 Asynchronously transfer your files with `rsync` on save.
 
 ![output](https://github.com/OscarCreator/rsync.nvim/assets/53407525/c5c402bd-98ac-4899-9ce0-ebf27db28d29)
@@ -13,6 +14,7 @@ Asynchronously transfer your files with `rsync` on save.
 ## Installation
 
 ```lua
+-- packer.nvim
 use {
     'OscarCreator/rsync.nvim',
     run = 'make',
@@ -21,13 +23,22 @@ use {
         require("rsync").setup()
     end
 }
+-- lazy.nvim
+{
+    'OscarCreator/rsync.nvim',
+    build = 'make',
+    dependencies = 'nvim-lua/plenary.nvim',
+    config = function()
+        require("rsync").setup()
+    end,
+}
 ```
 
 ## Usage
 
-**rsync.nvim** looks for `.nvim/rsync.toml` file by default in the root of
-your project. The path can also be set with the `project_config_path`
-key in the plugin configuration.
+**rsync.nvim** looks for `.nvim/rsync.toml` file by default in the root of your
+project. The path can also be set with the `project_config_path` key in the
+plugin configuration.
 
 The current options available:
 
@@ -51,18 +62,18 @@ ignorefile_paths = ["~/.gitignore", ".gitignore"]
 
 ## Commands
 
-Name               | Action
--------------------|-------
-RsyncDown          | Sync all files from remote* to local folder.
-RsyncDownFile      | Sync specified or current file from remote to local folder.
-RsyncUp            | Sync all files from local* to remote folder.
-RsyncUpFile        | Sync specified or current file from local to remote. This requires rsync version >= 3.2.3
-RsyncLog           | Open log file for rsync.nvim.
-RsyncConfig        | Print out user config.
-RsyncProjectConfig | Print or reload current project config.
-RsyncSaveSync      | Temporarily disable/enable/toggle sync when saving.
+| Name               | Action                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| RsyncDown          | Sync all files from remote\* to local folder.                                             |
+| RsyncDownFile      | Sync specified or current file from remote to local folder.                               |
+| RsyncUp            | Sync all files from local\* to remote folder.                                             |
+| RsyncUpFile        | Sync specified or current file from local to remote. This requires rsync version >= 3.2.3 |
+| RsyncLog           | Open log file for rsync.nvim.                                                             |
+| RsyncConfig        | Print out user config.                                                                    |
+| RsyncProjectConfig | Print or reload current project config.                                                   |
+| RsyncSaveSync      | Temporarily disable/enable/toggle sync when saving.                                       |
 
-*: Files which are excluded are, everything in .gitignore and .nvim folder.
+\*: Files which are excluded are, everything in .gitignore and .nvim folder.
 
 ## Configuration
 
