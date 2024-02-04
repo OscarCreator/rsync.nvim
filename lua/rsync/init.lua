@@ -1,11 +1,11 @@
-local M = {}
-
 local rsync_nvim = vim.api.nvim_create_augroup("rsync_nvim", { clear = true })
 
 local project = require("rsync.project")
 local sync = require("rsync.sync")
 local config = require("rsync.config")
 local log = require("rsync.log")
+
+local rsync = {}
 
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
     callback = function()
@@ -18,7 +18,7 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
             end
             vim.api.nvim_create_autocmd({ "BufWritePost" }, {
                 callback = function()
-                    if config.values.sync_on_save then
+                    if config.get_current_config().sync_on_save then
                         sync.sync_up()
                     end
                 end,
@@ -36,11 +36,11 @@ vim.api.nvim_create_user_command("RsyncSaveSync", function(opts)
     local cmd = opts.fargs[1]
 
     if cmd == "disable" then
-        config.values.sync_on_save = false
+        config.get_current_config().sync_on_save = false
     elseif cmd == "toggle" then
-        config.values.sync_on_save = not config.values.sync_on_save
+        config.get_current_config().sync_on_save = not config.get_current_config().sync_on_save
     elseif cmd == "enable" then
-        config.values.sync_on_save = true
+        config.get_current_config().sync_on_save = true
     else
         vim.api.nvim_err_writeln(string.format("Unknown subcommand: '%s'", cmd))
     end
@@ -83,7 +83,7 @@ vim.api.nvim_create_user_command("RsyncLog", function()
 end, {})
 
 vim.api.nvim_create_user_command("RsyncConfig", function()
-    print(vim.inspect(config.values))
+    print(vim.inspect(config.get_current_config()))
 end, {})
 
 vim.api.nvim_create_user_command("RsyncProjectConfig", function(opts)
@@ -131,7 +131,7 @@ end, {
 })
 
 --- get current sync status of project
-M.status = function()
+function rsync.status()
     local config_table = project.get_config_table()
     if config_table == nil then
         return ""
@@ -155,15 +155,16 @@ M.status = function()
 end
 
 --- get current project config
-function M.config()
+---@return table | nil
+function rsync.config()
     return project.get_config_table()
 end
 
 --- Setup global user defined configuration
-function M.setup(user_config)
-    config.set_defaults(user_config)
+function rsync.setup(user_config)
+    config.apply_config(user_config)
 
-    if config.values.fugitive_sync then
+    if config.get_current_config().fugitive_sync then
         vim.api.nvim_create_autocmd({ "User" }, {
             pattern = "FugitiveChanged",
             callback = function()
@@ -174,4 +175,4 @@ function M.setup(user_config)
     end
 end
 
-return M
+return rsync

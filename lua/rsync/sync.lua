@@ -33,7 +33,7 @@ local function safe_sync(command, on_start, on_exit)
                 log.info(string.format("safe_sync command: '%s', on_stderr: '%s'", command, vim.inspect(output)))
             end
 
-            config.values.on_stderr(output, command)
+            config.get_current_config().on_stderr(output, command)
         end,
 
         -- job done executing
@@ -43,7 +43,7 @@ local function safe_sync(command, on_start, on_exit)
                 log.info(string.format("safe_sync command: '%s', on_exit with code = '%s'", command, code))
             end
 
-            config.values.on_exit(code, command)
+            config.get_current_config().on_exit(code, command)
         end,
         stdout_buffered = true,
         stderr_buffered = true,
@@ -296,7 +296,7 @@ function sync.sync_down_file(filename)
                 _RsyncProjectConfigs[project_config.project_path].status.file.state = FileSyncStates.DONE
                 _RsyncProjectConfigs[project_config.project_path].status.file.job_id = -1
                 _RsyncProjectConfigs[project_config.project_path].status.file.code = code
-                if config.values.reload_file_after_sync then
+                if config.get_current_config().reload_file_after_sync then
                     vim.api.nvim_buf_call(buf, function()
                         vim.cmd.e()
                     end)
