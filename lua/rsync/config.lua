@@ -4,7 +4,6 @@
 ---@field reload_file_after_sync boolean
 ---@field on_exit fun(code: integer, command: string) | nil
 ---@field on_stderr fun(code: integer, command: string) | nil
-RsyncConfig = {}
 
 local M = {}
 
