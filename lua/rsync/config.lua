@@ -1,19 +1,36 @@
-local config = {}
-config.values = {
+---@class RsyncConfig
+---@field fugitive_sync boolean
+---@field sync_on_save boolean
+---@field reload_file_after_sync boolean
+---@field on_exit fun(code: integer, command: string) | nil
+---@field on_stderr fun(code: integer, command: string) | nil
+
+local M = {}
+
+-- TODO allow more configuration options
+
+---@type RsyncConfig
+local config = {
     fugitive_sync = false,
     sync_on_save = true,
     reload_file_after_sync = true,
     project_config_path = ".nvim/rsync.toml",
-    on_exit = function(code, command) end,
-    on_stderr = function(output, command) end,
+    on_exit = nil,
+    on_stderr = nil,
 }
 
-function config.set_defaults(user_defaults)
-    user_defaults = vim.F.if_nil(user_defaults, {})
-
+---Apply configuration from passed in table
+---@param user_defaults table
+function M.apply_config(user_defaults)
     for key, value in pairs(user_defaults) do
-        config.values[key] = value
+        config[key] = value
     end
 end
 
-return config
+---Get current set configuration
+---@return RsyncConfig
+function M.get_current_config()
+    return config
+end
+
+return M

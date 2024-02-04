@@ -3,3 +3,4 @@ lua/deps
 *.so
 doc/tags
 luacov*
+plenary.nvim

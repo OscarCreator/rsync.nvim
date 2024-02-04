@@ -10,7 +10,7 @@ local project = {}
 
 _RsyncProjectConfigs = _RsyncProjectConfigs or {}
 
-local config_path = config.values.project_config_path
+local config_path = config.get_current_config().project_config_path
 
 --- try find a config file.
 -- @return string, or nil
@@ -46,9 +46,8 @@ local function get_config(config_file_path)
     end
 end
 
---- get project config if present
--- @return table, nil
--- @return table with config, nil if not found
+---Get project config if present
+---@return table | nil
 function project.get_config_table()
     local config_file_path = get_config_file()
     -- if project does not contain config file
