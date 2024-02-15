@@ -33,7 +33,9 @@ local function safe_sync(command, on_start, on_exit)
                 log.info(string.format("safe_sync command: '%s', on_stderr: '%s'", command, vim.inspect(output)))
             end
 
-            config.get_current_config().on_stderr(output, command)
+            if config.get_current_config().on_stderr ~= nil then
+                config.get_current_config().on_stderr(output, command)
+            end
         end,
 
         -- job done executing
@@ -43,7 +45,9 @@ local function safe_sync(command, on_start, on_exit)
                 log.info(string.format("safe_sync command: '%s', on_exit with code = '%s'", command, code))
             end
 
-            config.get_current_config().on_exit(code, command)
+            if config.get_current_config().on_exit ~= nil then
+                config.get_current_config().on_exit(code, command)
+            end
         end,
         stdout_buffered = true,
         stderr_buffered = true,
