@@ -74,10 +74,12 @@ local function create_filters(filter_paths)
 
         if f ~= nil then
             for line in f:lines() do
-                if line:sub(1, 1) == "!" then
-                    include = include .. "--include='" .. line:sub(2, -1) .. "' "
-                else
-                    exclude = exclude .. "--exclude='" .. line .. "' "
+                if line:sub(1, 1) ~= "#" then
+                    if line:sub(1, 1) == "!" then
+                        include = include .. "--include='" .. line:sub(2, -1) .. "' "
+                    else
+                        exclude = exclude .. "--exclude='" .. line .. "' "
+                    end
                 end
             end
         end
