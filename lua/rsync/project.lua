@@ -1,20 +1,27 @@
----
--- Project config functions
-
 local rsync_nvim = require("rsync_nvim")
 local path = require("plenary.path")
 local log = require("rsync.log")
 local config = require("rsync.config")
 
+---@class RsyncProjectStatus
+---@field code integer last exit code
+---@field state FileSyncStates current state of syncing
+---@field job_id integer job id of current sync, default -1
+
+---@class RsyncProjectConfig
+---@field project_path string path to the root of the project
+---@field file RsyncProjectStatus
+---@field project RsyncProjectStatus
+
 local project = {}
 
+---@type RsyncProjectConfig[]
 _RsyncProjectConfigs = _RsyncProjectConfigs or {}
 
 local config_path = config.get_current_config().project_config_path
 
---- try find a config file.
--- @return string, or nil
--- @return absolute path, or config not found error
+---Try find a config file.
+---@return string?, string? # absolute path, or config not found error
 local function get_config_file()
     local config_file_path = vim.fn.findfile(config_path, ".;")
     if vim.fn.len(config_file_path) > 0 then
@@ -24,18 +31,17 @@ local function get_config_file()
     return nil, "config file not found"
 end
 
---- get project path from config file path.
--- @param config_file_path a path to the config file
--- @return the project path
+---Get project path from config file path.
+---@param config_file_path string a path to the config file
+---@return string # the project path
 local function get_project_path(config_file_path)
     local project_path = string.sub(config_file_path, 1, -(1 + string.len(config_path)))
     return project_path
 end
 
---- get config from file path.
--- @param config_file_path the path to the config file
--- @return string, or error
--- @return a table with config, could not decode rsync.toml error
+---Get config from file path.
+---@param config_file_path string the path to the config file
+---@return table? # config table or could not decode rsync.toml error
 local function get_config(config_file_path)
     local succeeded, table = pcall(rsync_nvim.decode_toml, config_file_path)
     if succeeded then
@@ -47,7 +53,7 @@ local function get_config(config_file_path)
 end
 
 ---Get project config if present
----@return table | nil
+---@return RsyncProjectConfig?
 function project.get_config_table()
     local config_file_path = get_config_file()
     -- if project does not contain config file
@@ -62,10 +68,10 @@ function project.get_config_table()
     end
 
     -- decode config file and save to global table
-    table = get_config(config_file_path)
-    if table ~= nil then
-        table.project_path = project_path
-        table.status = {
+    local project_table = get_config(config_file_path)
+    if project_table ~= nil then
+        project_table.project_path = project_path
+        project_table.status = {
             file = {
                 code = 0,
                 state = FileSyncStates.DONE,
@@ -79,17 +85,18 @@ function project.get_config_table()
         }
 
         -- use the default value if ignorefile_paths is not specified in project config
-        table.ignorefile_paths = table.ignorefile_paths or { ".gitignore" }
-        _RsyncProjectConfigs[project_path] = table
-        return table
+        project_table.ignorefile_paths = project_table.ignorefile_paths or { ".gitignore" }
+        _RsyncProjectConfigs[project_path] = project_table
+        return project_table
     end
 end
 
---- Reload project config
+---Reload project config
 function project.reload_config()
     local config_file_path = get_config_file()
     if config_file_path == nil then
         vim.api.nvim_err_writeln("Could not find rsync.toml")
+        return
     end
     local project_path = get_project_path(config_file_path)
     -- reload
@@ -97,8 +104,9 @@ function project.reload_config()
     project.get_config_table()
 end
 
---- Run passed function if project config is found
---- @param fn function fuction to call if config is found
+---Run passed function if project config is found
+---@param fn fun(table) fuction to call if config is found
+---@param report_error boolean? report error if nil or true
 function project:run(fn, report_error)
     local config_table = project.get_config_table()
     if config_table == nil then

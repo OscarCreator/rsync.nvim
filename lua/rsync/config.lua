@@ -2,8 +2,9 @@
 ---@field fugitive_sync boolean
 ---@field sync_on_save boolean
 ---@field reload_file_after_sync boolean
----@field on_exit fun(code: integer, command: string) | nil
----@field on_stderr fun(code: integer, command: string) | nil
+---@field project_config_path string
+---@field on_exit? fun(code: integer, command: string)
+---@field on_stderr? fun(code: integer, command: string)
 
 local M = {}
 

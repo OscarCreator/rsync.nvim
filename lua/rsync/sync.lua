@@ -8,6 +8,7 @@ local log = require("rsync.log")
 local config = require("rsync.config")
 local path = require("plenary.path")
 
+---@enum FileSyncStates
 FileSyncStates = {
     DONE = 0,
     STOPPED = 1,
@@ -15,6 +16,7 @@ FileSyncStates = {
     SYNC_DOWN_FILE = 3,
 }
 
+---@enum ProjectSyncStates
 ProjectSyncStates = {
     DONE = 0,
     STOPPED = 1,
