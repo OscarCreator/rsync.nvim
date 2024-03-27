@@ -80,13 +80,14 @@ ignorefile_paths = ["~/.gitignore", ".gitignore"]
 Global configuration settings with the default values
 
 ```lua
+---@type RsyncConfig
 {
     -- triggers `RsyncUp` when fugitive thinks something might have changed in the repo.
     fugitive_sync = false,
     -- triggers `RsyncUp` when you save a file.
-    sync_on_save = true
+    sync_on_save = true,
     -- the path to the project configuration
-    project_config_path = ".nvim/rsync.toml"
+    project_config_path = ".nvim/rsync.toml",
     -- called when the rsync command exits, provides the exit code and the used command
     on_exit = function(code, command)
     end,
