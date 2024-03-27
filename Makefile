@@ -35,8 +35,13 @@ cargocheck:
 	cargo fmt --check
 	cargo clippy
 
+.PHONY: plenary
+plenary:
+	if [ -d plenary.nvim ]; then cd plenary.nvim && git pull; \
+		else git clone https://github.com/nvim-lua/plenary.nvim; fi
+
 .PHONY: test
-test:
+test: plenary
 	nvim --headless --noplugin -u $(MINIMAL_PATH) -c "PlenaryBustedDirectory $(TEST_DIR) {minimal_init = '$(MINIMAL_INIT_PATH)'}"
 
 .PHONY: testcov
