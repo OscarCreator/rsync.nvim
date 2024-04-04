@@ -506,6 +506,15 @@ describe("rsync", function()
             end)
         end)
 
+        it("on RsyncUp with gitignore comments", function()
+            setup_with_gitignore(function()
+                -- Overwrite .gitignore w/ added comments
+                helpers.write_file(".gitignore", { "# Comment 1",  "should_ignore.txt", "# Another comment" })
+                vim.cmd.RsyncUp()
+                helpers.wait_sync()
+            end)
+        end)
+
         it("on RsyncUpFile", function()
             setup_with_gitignore(function()
                 helpers.write_file("second_test.tt", { "labbal" })
