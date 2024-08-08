@@ -23,6 +23,10 @@ local config = {
 ---Apply configuration from passed in table
 ---@param user_defaults table
 function M.apply_config(user_defaults)
+    if user_defaults == nil or type(user_defaults) ~= "table" then
+        return
+    end
+
     for key, value in pairs(user_defaults) do
         config[key] = value
     end
